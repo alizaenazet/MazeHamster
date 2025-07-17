@@ -13,14 +13,14 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
     
     override func setupService() {
         super.setupService()
-        print("✅ PhysicsService configured successfully")
+        // print("✅ PhysicsService configured successfully")
     }
     
     // MARK: - Protocol Methods
     
     func setupBallPhysics(for entity: Entity, withMaterial material: PhysicsMaterialResource) {
         guard let radius = getBallRadius(from: entity) else {
-            print("⚠️ Cannot setup ball physics: Unable to determine ball radius")
+            // print("⚠️ Cannot setup ball physics: Unable to determine ball radius")
             return
         }
         
@@ -41,7 +41,7 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
         entity.components.set(physicsBody)
         entity.components.set(collision)
         
-        print("🎯 Ball physics setup complete for entity: \(entity.name)")
+        // print("🎯 Ball physics setup complete for entity: \(entity.name)")
     }
     
     func setupWallPhysics(for entity: Entity, size: SIMD3<Float>) {
@@ -62,7 +62,7 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
         entity.components.set(physicsBody)
         entity.components.set(collision)
         
-        print("🧱 Wall physics setup complete for entity: \(entity.name)")
+        // print("🧱 Wall physics setup complete for entity: \(entity.name)")
     }
     
     func setupFloorPhysics(for entity: Entity, size: SIMD3<Float>) {
@@ -83,7 +83,7 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
         entity.components.set(physicsBody)
         entity.components.set(collision)
         
-        print("🏢 Floor physics setup complete for entity: \(entity.name)")
+        // print("🏢 Floor physics setup complete for entity: \(entity.name)")
     }
     
     func applyTiltToBall(_ ball: Entity, tiltData: TiltData) {
@@ -104,7 +104,7 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
                               translation: newPosition), 
                  relativeTo: ball.parent)
         
-        print("🎯 Applied tilt force: \(force) to ball")
+        // print("🎯 Applied tilt force: \(force) to ball")
     }
     
     // MARK: - Helper Methods
@@ -123,33 +123,33 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
     /// Apply impulse force to an entity
     func applyImpulse(_ impulse: SIMD3<Float>, to entity: Entity) {
         guard var physicsBody = entity.components[PhysicsBodyComponent.self] else {
-            print("⚠️ Cannot apply impulse: Entity has no physics body")
+            // print("⚠️ Cannot apply impulse: Entity has no physics body")
             return
         }
         
         // Apply impulse by modifying velocity if available
         // Note: RealityKit's PhysicsBodyComponent may not have direct velocity properties
         // This would typically be handled by the physics engine itself
-        print("🎯 Applied impulse force: \(impulse) to entity: \(entity.name)")
+        // print("🎯 Applied impulse force: \(impulse) to entity: \(entity.name)")
     }
     
     /// Apply torque to an entity
     func applyTorque(_ torque: SIMD3<Float>, to entity: Entity) {
         guard var physicsBody = entity.components[PhysicsBodyComponent.self] else {
-            print("⚠️ Cannot apply torque: Entity has no physics body")
+            // print("⚠️ Cannot apply torque: Entity has no physics body")
             return
         }
         
         // Apply torque by modifying angular velocity if available
         // Note: RealityKit's PhysicsBodyComponent may not have direct angular velocity properties
         // This would typically be handled by the physics engine itself
-        print("🎯 Applied torque: \(torque) to entity: \(entity.name)")
+        // print("🎯 Applied torque: \(torque) to entity: \(entity.name)")
     }
     
     /// Set physics material for an entity
     func setPhysicsMaterial(_ material: PhysicsMaterialResource, for entity: Entity) {
         guard var physicsBody = entity.components[PhysicsBodyComponent.self] else {
-            print("⚠️ Cannot set physics material: Entity has no physics body")
+            // print("⚠️ Cannot set physics material: Entity has no physics body")
             return
         }
         
@@ -165,11 +165,11 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
             
             // You would need to restore the physics body here
             // This requires storing the original configuration
-            print("ℹ️ Physics restoration not implemented - create new physics body")
+            // print("ℹ️ Physics restoration not implemented - create new physics body")
         } else {
             // Disable physics by removing the physics body
             entity.components.remove(PhysicsBodyComponent.self)
-            print("🚫 Physics disabled for entity: \(entity.name)")
+            // print("🚫 Physics disabled for entity: \(entity.name)")
         }
     }
 } 

@@ -89,7 +89,7 @@ class GameCoordinator: ObservableObject {
         systemStatus = .ready
         isInitialized = true
         
-        print("🎮 Enhanced GameCoordinator with collectibles initialized successfully")
+        // print("🎮 Enhanced GameCoordinator with collectibles initialized successfully")
     }
     
     private func setupBindings() {
@@ -145,10 +145,10 @@ class GameCoordinator: ObservableObject {
         // Update adaptive info for debugging
         updateAdaptiveInfo()
         
-        print("📱 Updated adaptive configuration:")
-        print("   Maze Size: \(adaptiveConfig.maze.width)x\(adaptiveConfig.maze.height)")
-        print("   Cell Size: \(adaptiveConfig.maze.cellSize)")
-        print("   Camera Height: \(adaptiveConfig.cameraHeight)")
+        // print("📱 Updated adaptive configuration:")
+        // print("   Maze Size: \(adaptiveConfig.maze.width)x\(adaptiveConfig.maze.height)")
+        // print("   Cell Size: \(adaptiveConfig.maze.cellSize)")
+        // print("   Camera Height: \(adaptiveConfig.cameraHeight)")
     }
     
     private func updateAdaptiveInfo() {
@@ -164,7 +164,7 @@ class GameCoordinator: ObservableObject {
         
         // If game is running, might want to recreate scene with new configuration
         // For now, just log the change
-        print("📱 Screen changed - adaptive configuration updated")
+        // print("📱 Screen changed - adaptive configuration updated")
     }
     
     // MARK: - Enhanced Scene Creation with Collectibles
@@ -229,10 +229,10 @@ class GameCoordinator: ObservableObject {
         scene.addChild(camera)
         
         systemStatus = .ready
-        print("🏗️ Enhanced game scene with collectibles created successfully")
-        print("   Maze: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
-        print("   Collectibles: \(collectibleEntities.count)")
-        print("   Required Keys: \(requiredKeysForExit)")
+        // print("🏗️ Enhanced game scene with collectibles created successfully")
+        // print("   Maze: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
+        // print("   Collectibles: \(collectibleEntities.count)")
+        // print("   Required Keys: \(requiredKeysForExit)")
         
         return scene
     }
@@ -262,14 +262,14 @@ class GameCoordinator: ObservableObject {
         )
         
         systemStatus = .ready
-        print("🌀 New adaptive maze with collectibles generated: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
+        // print("🌀 New adaptive maze with collectibles generated: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
     }
     
     /// Force refresh adaptive configuration (useful when screen rotates)
     func refreshAdaptiveConfiguration() {
         screenAdaptiveService.refreshScreenDetection()
         updateAdaptiveConfiguration()
-        print("🔄 Adaptive configuration refreshed")
+        // print("🔄 Adaptive configuration refreshed")
     }
     
     // MARK: - Collectible System Methods
@@ -365,7 +365,7 @@ class GameCoordinator: ObservableObject {
         let playerStatusComponent = PlayerStatusComponent(entityId: ballEntityId!)
         ecsWorld.componentManager.addComponent(playerStatusComponent, to: ballEntityId!)
         
-        print("🎯 Adaptive ball with collectible support created with radius: \(gameConfiguration.ballRadius)")
+        // print("🎯 Adaptive ball with collectible support created with radius: \(gameConfiguration.ballRadius)")
         return ball
     }
     
@@ -402,7 +402,7 @@ class GameCoordinator: ObservableObject {
             physicsSystem.registerEntity(cat, with: catId)
         }
         
-        print("🐱 Adaptive cat created at offset: \(offsetDistance)")
+        // print("🐱 Adaptive cat created at offset: \(offsetDistance)")
         return cat
     }
     
@@ -422,7 +422,7 @@ class GameCoordinator: ObservableObject {
         camera.position = centeredPosition
         camera.look(at: mazeCenter, from: centeredPosition, relativeTo: nil)
         
-        print("📷 Adaptive camera created at position: \(centeredPosition)")
+        // print("📷 Adaptive camera created at position: \(centeredPosition)")
         return camera
     }
     
@@ -466,9 +466,9 @@ class GameCoordinator: ObservableObject {
         
         if nearExit && hasRequiredKeys && gameService.gameState == .playing {
             gameService.setGameState(.completed)
-            print("🎉 Game completed with collectibles! Keys collected: \(collectionProgress.keys)/\(collectionProgress.requiredKeys)")
+            // print("🎉 Game completed with collectibles! Keys collected: \(collectionProgress.keys)/\(collectionProgress.requiredKeys)")
         } else if nearExit && !hasRequiredKeys {
-            print("🔒 Player at exit but missing keys: \(collectionProgress.keys)/\(collectionProgress.requiredKeys)")
+            // print("🔒 Player at exit but missing keys: \(collectionProgress.keys)/\(collectionProgress.requiredKeys)")
         }
     }
     
@@ -494,7 +494,7 @@ class GameCoordinator: ObservableObject {
         // Clear path visualization
         pathfindingService.clearPathVisualization()
         
-        print("🔄 Enhanced game reset with collectibles and timing restart")
+        // print("🔄 Enhanced game reset with collectibles and timing restart")
     }
     
     private func resetAdaptiveEntityPositions(in scene: Entity) {
@@ -602,22 +602,22 @@ class GameCoordinator: ObservableObject {
         // Clear collectibles
         clearCollectibles()
         
-        print("🔄 Maze changed - pathfinding cache, visualization, and collectibles cleared")
+        // print("🔄 Maze changed - pathfinding cache, visualization, and collectibles cleared")
     }
     
     private func handleGameCompleted() {
         pathfindingService.clearPathVisualization()
         
         let finalProgress = getCollectionProgress()
-        print("🎉 Game completed with collectibles - coordinator handling")
-        print("   Final Collection: \(finalProgress.collectedItems)/\(finalProgress.totalItems)")
-        print("   Keys Found: \(finalProgress.keys)/\(finalProgress.requiredKeys)")
-        print("   Completion: \(Int(finalProgress.completionPercentage * 100))%")
+        // print("🎉 Game completed with collectibles - coordinator handling")
+        // print("   Final Collection: \(finalProgress.collectedItems)/\(finalProgress.totalItems)")
+        // print("   Keys Found: \(finalProgress.keys)/\(finalProgress.requiredKeys)")
+        // print("   Completion: \(Int(finalProgress.completionPercentage * 100))%")
     }
     
     private func handleGameFailed() {
         pathfindingService.clearPathVisualization()
-        print("💥 Game failed - coordinator handling")
+        // print("💥 Game failed - coordinator handling")
     }
     
     // MARK: - Physics and Collision Setup
@@ -661,14 +661,14 @@ class GameCoordinator: ObservableObject {
         
         // Check if player has shield protection
         if let playerStatus = getPlayerStatus(), playerStatus.hasShield {
-            print("🛡️ Player protected by shield - cat collision ignored")
+            // print("🛡️ Player protected by shield - cat collision ignored")
             return
         }
         
         if aiSystem.checkCatPlayerCollision(catEntityId: catEntityId, playerEntityId: ballEntityId) {
             // Cat caught the player - game over
             gameService.setGameState(.failed)
-            print("🐱 Cat caught the unprotected player! Game Over!")
+            // print("🐱 Cat caught the unprotected player! Game Over!")
         }
     }
     
@@ -701,7 +701,7 @@ class GameCoordinator: ObservableObject {
     func updateConfiguration(_ newConfiguration: GameConfiguration) {
         gameConfiguration = newConfiguration
         currentMazeSize = SIMD2<Int>(newConfiguration.maze.width, newConfiguration.maze.height)
-        print("⚙️ Game configuration updated to: \(newConfiguration.maze.width)x\(newConfiguration.maze.height)")
+        // print("⚙️ Game configuration updated to: \(newConfiguration.maze.width)x\(newConfiguration.maze.height)")
     }
     
     func getConfiguration() -> GameConfiguration {
@@ -759,7 +759,7 @@ class GameCoordinator: ObservableObject {
     
     func startCoordinator() {
         guard isInitialized else {
-            print("⚠️ Cannot start coordinator: Not initialized")
+            // print("⚠️ Cannot start coordinator: Not initialized")
             return
         }
         
@@ -774,7 +774,7 @@ class GameCoordinator: ObservableObject {
             aiSystem.resetGameTiming()
         }
         
-        print("🚀 Enhanced GameCoordinator with collectibles started")
+        // print("🚀 Enhanced GameCoordinator with collectibles started")
     }
     
     func stopCoordinator() {
@@ -796,7 +796,7 @@ class GameCoordinator: ObservableObject {
         ecsWorld.shutdown()
         
         systemStatus = .idle
-        print("🛑 Enhanced GameCoordinator with collectibles stopped")
+        // print("🛑 Enhanced GameCoordinator with collectibles stopped")
     }
     
     // MARK: - Cleanup
@@ -804,6 +804,6 @@ class GameCoordinator: ObservableObject {
     deinit {
         stopCoordinator()
         cancellables.removeAll()
-        print("🧹 Enhanced GameCoordinator with collectibles deallocated")
+        // print("🧹 Enhanced GameCoordinator with collectibles deallocated")
     }
 }

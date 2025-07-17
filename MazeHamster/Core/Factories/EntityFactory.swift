@@ -36,7 +36,7 @@ class EntityFactory: EntityFactoryProtocol {
         ball.components.set(physicsBody)
         ball.components.set(collision)
         
-        print("🎯 Ball entity created with radius: \(radius)")
+        // print("🎯 Ball entity created with radius: \(radius)")
         return ball
     }
     
@@ -63,7 +63,7 @@ class EntityFactory: EntityFactoryProtocol {
         wall.components.set(physicsBody)
         wall.components.set(collision)
         
-        print("🧱 Wall entity created with size: \(size)")
+        // print("🧱 Wall entity created with size: \(size)")
         return wall
     }
     
@@ -90,7 +90,7 @@ class EntityFactory: EntityFactoryProtocol {
         floor.components.set(physicsBody)
         floor.components.set(collision)
         
-        print("🏢 Floor entity created with size: \(size)")
+        // print("🏢 Floor entity created with size: \(size)")
         return floor
     }
     
@@ -109,7 +109,7 @@ class EntityFactory: EntityFactoryProtocol {
         
         exit.components.set(collision)
         
-        print("🚪 Exit entity created with radius: \(radius)")
+        // print("🚪 Exit entity created with radius: \(radius)")
         return exit
     }
     
@@ -175,7 +175,7 @@ class EntityFactory: EntityFactoryProtocol {
         cat.components.set(physicsBody)
         cat.components.set(collision)
         
-        print("🐱 Cat agent entity created with green box appearance")
+        // print("🐱 Cat agent entity created with green box appearance")
         return cat
     }
     
@@ -241,7 +241,7 @@ class EntityFactory: EntityFactoryProtocol {
         )
         componentManager.addComponent(renderComponent, to: entityId)
         
-        print("🐱 Cat entity with ECS components created at position: \(startPosition)")
+        // print("🐱 Cat entity with ECS components created at position: \(startPosition)")
         return (cat, entityId)
     }
     
@@ -275,7 +275,7 @@ class EntityFactory: EntityFactoryProtocol {
             light.components.set(spotLight)
         }
         
-        print("💡 Light entity created with type: \(type)")
+        // print("💡 Light entity created with type: \(type)")
         return light
     }
     
@@ -290,7 +290,7 @@ class EntityFactory: EntityFactoryProtocol {
         cameraComponent.fieldOfViewInDegrees = fov
         camera.components.set(cameraComponent)
         
-        print("📷 Camera entity created with FOV: \(fov)°")
+        // print("📷 Camera entity created with FOV: \(fov)°")
         return camera
     }
     
@@ -299,7 +299,7 @@ class EntityFactory: EntityFactoryProtocol {
         let container = Entity()
         container.name = name
         
-        print("📦 Container entity created: \(name)")
+        // print("📦 Container entity created: \(name)")
         return container
     }
     
@@ -311,7 +311,7 @@ class EntityFactory: EntityFactoryProtocol {
         // Note: Particle systems would be configured based on specific needs
         // This is a placeholder for particle system creation
         
-        print("✨ Particle system entity created: \(name)")
+        // print("✨ Particle system entity created: \(name)")
         return particles
     }
     
@@ -334,14 +334,14 @@ class EntityFactory: EntityFactoryProtocol {
         let clone = entity.clone(recursive: true)
         clone.name = name
         
-        print("🔄 Entity cloned: \(name)")
+        // print("🔄 Entity cloned: \(name)")
         return clone
     }
     
     /// Remove entity from scene
     func removeEntity(_ entity: Entity) {
         entity.removeFromParent()
-        print("🗑️ Entity removed: \(entity.name)")
+        // print("🗑️ Entity removed: \(entity.name)")
     }
 }
 

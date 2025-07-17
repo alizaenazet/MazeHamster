@@ -24,7 +24,7 @@ class HapticService: BaseService {
     override func setupService() {
         super.setupService()
         prepareHaptics()
-        print("✅ HapticService configured successfully")
+        // print("✅ HapticService configured successfully")
     }
     
     private func prepareHaptics() {
@@ -41,25 +41,25 @@ class HapticService: BaseService {
     /// Haptic feedback for game start
     func gameStarted() {
         notificationGenerator.notificationOccurred(.success)
-        print("🔸 Haptic: Game Started")
+        // print("🔸 Haptic: Game Started")
     }
     
     /// Haptic feedback for game pause
     func gamePaused() {
         impactMedium.impactOccurred()
-        print("🔸 Haptic: Game Paused")
+        // print("🔸 Haptic: Game Paused")
     }
     
     /// Haptic feedback for game resume
     func gameResumed() {
         selectionGenerator.selectionChanged()
-        print("🔸 Haptic: Game Resumed")
+        // print("🔸 Haptic: Game Resumed")
     }
     
     /// Haptic feedback for game reset
     func gameReset() {
         impactLight.impactOccurred()
-        print("🔸 Haptic: Game Reset")
+        // print("🔸 Haptic: Game Reset")
     }
     
     /// Haptic feedback for level completion
@@ -78,7 +78,7 @@ class HapticService: BaseService {
             self.notificationGenerator.notificationOccurred(.success)
         }
         
-        print("🔸 Haptic: Level Completed (Success Pattern)")
+        // print("🔸 Haptic: Level Completed (Success Pattern)")
     }
     
     /// Haptic feedback for game over (caught by cat)
@@ -97,19 +97,19 @@ class HapticService: BaseService {
             self.notificationGenerator.notificationOccurred(.error)
         }
         
-        print("🔸 Haptic: Game Over (Failure Pattern)")
+        // print("🔸 Haptic: Game Over (Failure Pattern)")
     }
     
     /// Haptic feedback for cat spawn warning
     func catSpawnWarning() {
         notificationGenerator.notificationOccurred(.warning)
-        print("🔸 Haptic: Cat Spawn Warning")
+        // print("🔸 Haptic: Cat Spawn Warning")
     }
     
     /// Haptic feedback for collectible pickup
     func collectiblePickup() {
         impactLight.impactOccurred()
-        print("🔸 Haptic: Collectible Pickup")
+        // print("🔸 Haptic: Collectible Pickup")
     }
     
     /// Haptic feedback for key pickup (special collectible)
@@ -118,13 +118,13 @@ class HapticService: BaseService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.selectionGenerator.selectionChanged()
         }
-        print("🔸 Haptic: Key Pickup")
+        // print("🔸 Haptic: Key Pickup")
     }
     
     /// Haptic feedback for power-up activation
     func powerUpActivated() {
         impactMedium.impactOccurred()
-        print("🔸 Haptic: Power-up Activated")
+        // print("🔸 Haptic: Power-up Activated")
     }
     
     /// Haptic feedback for shield activation
@@ -133,37 +133,37 @@ class HapticService: BaseService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             self.impactLight.impactOccurred()
         }
-        print("🔸 Haptic: Shield Activated")
+        // print("🔸 Haptic: Shield Activated")
     }
     
     /// Haptic feedback for near miss with cat
     func nearMiss() {
         impactMedium.impactOccurred()
-        print("🔸 Haptic: Near Miss")
+        // print("🔸 Haptic: Near Miss")
     }
     
     /// Haptic feedback for button interactions
     func buttonTapped() {
         selectionGenerator.selectionChanged()
-        print("🔸 Haptic: Button Tapped")
+        // print("🔸 Haptic: Button Tapped")
     }
     
     /// Haptic feedback for maze generation
     func mazeGenerated() {
         impactLight.impactOccurred()
-        print("🔸 Haptic: Maze Generated")
+        // print("🔸 Haptic: Maze Generated")
     }
     
     /// Haptic feedback for countdown
     func countdownTick() {
         selectionGenerator.selectionChanged()
-        print("🔸 Haptic: Countdown Tick")
+        // print("🔸 Haptic: Countdown Tick")
     }
     
     /// Haptic feedback for final countdown
     func finalCountdown() {
         impactMedium.impactOccurred()
-        print("🔸 Haptic: Final Countdown")
+        // print("🔸 Haptic: Final Countdown")
     }
     
     // MARK: - Custom Haptic Patterns
@@ -194,7 +194,7 @@ class HapticService: BaseService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.notificationGenerator.notificationOccurred(.success)
         }
-        print("🔸 Haptic: Celebration Pattern")
+        // print("🔸 Haptic: Celebration Pattern")
     }
     
     private func warningPattern() {
@@ -204,7 +204,7 @@ class HapticService: BaseService {
                 self.impactMedium.impactOccurred()
             }
         }
-        print("🔸 Haptic: Warning Pattern")
+        // print("🔸 Haptic: Warning Pattern")
     }
     
     private func heartbeatPattern() {
@@ -213,7 +213,7 @@ class HapticService: BaseService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.impactMedium.impactOccurred()
         }
-        print("🔸 Haptic: Heartbeat Pattern")
+        // print("🔸 Haptic: Heartbeat Pattern")
     }
     
     private func risingPattern() {
@@ -225,7 +225,7 @@ class HapticService: BaseService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.impactHeavy.impactOccurred()
         }
-        print("🔸 Haptic: Rising Pattern")
+        // print("🔸 Haptic: Rising Pattern")
     }
     
     private func fallingPattern() {
@@ -237,7 +237,7 @@ class HapticService: BaseService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.impactLight.impactOccurred()
         }
-        print("🔸 Haptic: Falling Pattern")
+        // print("🔸 Haptic: Falling Pattern")
     }
     
     // MARK: - Haptic Settings
@@ -247,7 +247,7 @@ class HapticService: BaseService {
     /// Enable or disable haptic feedback
     func setHapticsEnabled(_ enabled: Bool) {
         isHapticsEnabled = enabled
-        print("🔸 Haptics \(enabled ? "enabled" : "disabled")")
+        // print("🔸 Haptics \(enabled ? "enabled" : "disabled")")
     }
     
     /// Check if haptics are enabled
@@ -265,7 +265,7 @@ class HapticService: BaseService {
     // MARK: - Cleanup
     
     deinit {
-        print("🧹 HapticService deallocated")
+        // print("🧹 HapticService deallocated")
     }
 }
 

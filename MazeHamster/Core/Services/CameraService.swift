@@ -15,7 +15,7 @@ class CameraService: BaseService, CameraServiceProtocol {
     
     override func setupService() {
         super.setupService()
-        print("✅ CameraService configured successfully")
+        // print("✅ CameraService configured successfully")
     }
     
     // MARK: - Protocol Methods
@@ -42,7 +42,7 @@ class CameraService: BaseService, CameraServiceProtocol {
         // Store reference
         cameraEntity = camera
         
-        print("📷 Camera setup complete at position: \(cameraPosition)")
+        // print("📷 Camera setup complete at position: \(cameraPosition)")
         return camera
     }
     
@@ -61,7 +61,7 @@ class CameraService: BaseService, CameraServiceProtocol {
         let maxDimension = max(Float(mazeSize.x), Float(mazeSize.y))
         let baseCameraHeight = maxDimension * cellSize * 1.2 + (gameConfiguration.cameraHeight)
         let finalCameraHeight = baseCameraHeight * gameConfiguration.cameraHeightMultiplier
-        print("Camera Height - Base: \(baseCameraHeight), Multiplier: \(gameConfiguration.cameraHeightMultiplier), Final: \(finalCameraHeight)")
+        // print("Camera Height - Base: \(baseCameraHeight), Multiplier: \(gameConfiguration.cameraHeightMultiplier), Final: \(finalCameraHeight)")
         return SIMD3<Float>(mazeCenterX, finalCameraHeight, mazeCenterZ)
     }
     

@@ -31,7 +31,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         super.setupService()
         // Generate initial maze
         maze = generateMaze(width: configuration.width, height: configuration.height)
-        print("✅ MazeService configured successfully")
+        // print("✅ MazeService configured successfully")
     }
     
     // MARK: - Protocol Methods
@@ -58,7 +58,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         // Update published property
         maze = mazeData
         
-        print("🌀 Generated new maze: \(width)x\(height)")
+        // print("🌀 Generated new maze: \(width)x\(height)")
         return mazeData
     }
     
@@ -77,7 +77,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         let exitEntity = createExitEntity()
         entities.append(exitEntity)
         
-        print("🏗️ Created \(entities.count) maze entities")
+        // print("🏗️ Created \(entities.count) maze entities")
         return entities
     }
     

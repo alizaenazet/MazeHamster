@@ -39,7 +39,7 @@ class PathfindingService: BaseService {
     
     override func setupService() {
         super.setupService()
-        print("✅ Enhanced PathfindingService configured successfully")
+        // print("✅ Enhanced PathfindingService configured successfully")
     }
     
     // MARK: - Public Methods
@@ -54,7 +54,7 @@ class PathfindingService: BaseService {
     /// Find path from start position to target position using A* algorithm
     func findPath(from startWorld: SIMD3<Float>, to targetWorld: SIMD3<Float>) -> [SIMD3<Float>] {
         guard let mazeService = mazeService else {
-            print("⚠️ PathfindingService: No maze service available")
+            // print("⚠️ PathfindingService: No maze service available")
             return []
         }
         
@@ -62,18 +62,18 @@ class PathfindingService: BaseService {
         let startCell = worldToGridPosition(startWorld)
         let targetCell = worldToGridPosition(targetWorld)
         
-        print("🗺️ Pathfinding from \(startCell) to \(targetCell)")
+        // print("🗺️ Pathfinding from \(startCell) to \(targetCell)")
         
         // Validate positions are within maze bounds
         guard isValidGridPosition(startCell) && isValidGridPosition(targetCell) else {
-            print("⚠️ Invalid grid positions: start=\(startCell), target=\(targetCell)")
+            // print("⚠️ Invalid grid positions: start=\(startCell), target=\(targetCell)")
             return []
         }
         
         // Check cache first
         let cacheKey = "\(startCell.x),\(startCell.y)-\(targetCell.x),\(targetCell.y)"
         if let cachedPath = pathCache[cacheKey] {
-            print("📋 Using cached path with \(cachedPath.count) waypoints")
+            // print("📋 Using cached path with \(cachedPath.count) waypoints")
             return convertCellPathToWorldPath(cachedPath)
         }
         
@@ -83,13 +83,13 @@ class PathfindingService: BaseService {
         // Cache the result
         if !cellPath.isEmpty {
             pathCache[cacheKey] = cellPath
-            print("💾 Cached new path with \(cellPath.count) waypoints")
+            // print("💾 Cached new path with \(cellPath.count) waypoints")
         }
         
         // Convert to world coordinates
         let worldPath = convertCellPathToWorldPath(cellPath)
         
-        print("🎯 Found path: \(cellPath.count) cells -> \(worldPath.count) world points")
+        // print("🎯 Found path: \(cellPath.count) cells -> \(worldPath.count) world points")
         return worldPath
     }
     
@@ -121,7 +121,7 @@ class PathfindingService: BaseService {
             pathVisualizationEntities.append(finalWaypoint)
         }
         
-        print("👁️ Path visualization created with \(pathVisualizationEntities.count) entities")
+        // print("👁️ Path visualization created with \(pathVisualizationEntities.count) entities")
     }
     
     /// Clear path visualization
@@ -135,7 +135,7 @@ class PathfindingService: BaseService {
     /// Clear the path cache (call when maze changes)
     func clearPathCache() {
         pathCache.removeAll()
-        print("🗑️ PathfindingService: Path cache cleared")
+        // print("🗑️ PathfindingService: Path cache cleared")
     }
     
     // MARK: - Navigation Grid Building
@@ -156,7 +156,7 @@ class PathfindingService: BaseService {
             }
         }
         
-        print("🗺️ Navigation grid built: \(width)x\(height)")
+        // print("🗺️ Navigation grid built: \(width)x\(height)")
     }
     
     // MARK: - A* Pathfinding Implementation
@@ -187,7 +187,7 @@ class PathfindingService: BaseService {
             // Check if we reached the target
             if current == target {
                 let path = reconstructPath(from: start, to: target)
-                print("🎯 A* found path with \(path.count) waypoints after \(searchCount) searches")
+                // print("🎯 A* found path with \(path.count) waypoints after \(searchCount) searches")
                 return path
             }
             
@@ -214,7 +214,7 @@ class PathfindingService: BaseService {
             }
         }
         
-        print("⚠️ A* failed to find path after \(searchCount) searches")
+        // print("⚠️ A* failed to find path after \(searchCount) searches")
         return []
     }
     
@@ -244,13 +244,13 @@ class PathfindingService: BaseService {
             // Check if there's no wall blocking the path
             if !mazeService.hasWall(at: cell, direction: wall) {
                 neighbors.append(neighborCell)
-                print("✅ Valid neighbor: \(cell) -> \(neighborCell) (no \(wall) wall)")
+                // print("✅ Valid neighbor: \(cell) -> \(neighborCell) (no \(wall) wall)")
             } else {
-                print("❌ Blocked neighbor: \(cell) -> \(neighborCell) (has \(wall) wall)")
+                // print("❌ Blocked neighbor: \(cell) -> \(neighborCell) (has \(wall) wall)")
             }
         }
         
-        print("🧭 Cell \(cell) has \(neighbors.count) navigable neighbors: \(neighbors)")
+        // print("🧭 Cell \(cell) has \(neighbors.count) navigable neighbors: \(neighbors)")
         return neighbors
     }
     
@@ -279,14 +279,14 @@ class PathfindingService: BaseService {
         while current != start {
             path.insert(current, at: 0)
             guard let parent = navigationGrid[current.x][current.y].parent else {
-                print("⚠️ Path reconstruction failed - no parent for \(current)")
+                // print("⚠️ Path reconstruction failed - no parent for \(current)")
                 return []
             }
             current = parent
         }
         
         path.insert(start, at: 0)
-        print("🔄 Reconstructed path: \(path)")
+        // print("🔄 Reconstructed path: \(path)")
         return path
     }
     

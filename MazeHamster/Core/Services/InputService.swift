@@ -29,26 +29,26 @@ class InputService: BaseService, InputServiceProtocol {
     
     private func configureMotionManager() {
         guard motionManager.isDeviceMotionAvailable else {
-            print("⚠️ Device motion is not available")
+            // print("⚠️ Device motion is not available")
             return
         }
         
         motionManager.deviceMotionUpdateInterval = updateInterval
-        print("✅ InputService configured successfully")
+        // print("✅ InputService configured successfully")
     }
     
     // MARK: - Protocol Methods
     
     func startMonitoring() {
         guard motionManager.isDeviceMotionAvailable else {
-            print("⚠️ Cannot start monitoring: Device motion unavailable")
+            // print("⚠️ Cannot start monitoring: Device motion unavailable")
             return
         }
         
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
             guard let self = self, let motion = motion else {
                 if let error = error {
-                    print("❌ Motion update error: \(error)")
+                    // print("❌ Motion update error: \(error)")
                 }
                 return
             }
@@ -56,12 +56,12 @@ class InputService: BaseService, InputServiceProtocol {
             self.processMotionData(motion)
         }
         
-        print("🎯 Input monitoring started")
+        // print("🎯 Input monitoring started")
     }
     
     func stopMonitoring() {
         motionManager.stopDeviceMotionUpdates()
-        print("🔄 Input monitoring stopped")
+        // print("🔄 Input monitoring stopped")
     }
     
     // MARK: - Private Methods

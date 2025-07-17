@@ -157,7 +157,7 @@ class CollectibleSystem: GameSystem {
     }
     
     func initialize() {
-        print("✨ CollectibleSystem initialized")
+        // print("✨ CollectibleSystem initialized")
     }
     
     func update(deltaTime: TimeInterval) {
@@ -168,7 +168,7 @@ class CollectibleSystem: GameSystem {
     
     func shutdown() {
         realityEntities.removeAll()
-        print("✨ CollectibleSystem shut down")
+        // print("✨ CollectibleSystem shut down")
     }
     
     // MARK: - Animation Updates
@@ -273,7 +273,7 @@ class CollectibleSystem: GameSystem {
         // Hide the collectible
         realityEntity.isEnabled = false
         
-        print("✨ Collected \(collectible.collectibleType): +\(collectible.collectibleType.points) points")
+        // print("✨ Collected \(collectible.collectibleType): +\(collectible.collectibleType.points) points")
         
         // Check if all keys collected for exit unlock
         if collectible.collectibleType == .key {
@@ -283,7 +283,7 @@ class CollectibleSystem: GameSystem {
     
     private func checkExitUnlock(playerStatus: PlayerStatusComponent) {
         if playerStatus.collectedKeys >= requiredKeysForExit {
-            print("🚪 Exit unlocked! Player has all required keys.")
+            // print("🚪 Exit unlocked! Player has all required keys.")
             // Here you could trigger exit unlock visual effects
         }
     }
@@ -291,7 +291,7 @@ class CollectibleSystem: GameSystem {
     private func playCollectionEffect(for type: CollectibleType, at position: SIMD3<Float>) {
         // Create a simple particle effect or visual feedback
         // This is a placeholder for more complex particle systems
-        print("✨ Collection effect for \(type) at \(position)")
+        // print("✨ Collection effect for \(type) at \(position)")
     }
     
     // MARK: - Public Methods
@@ -435,7 +435,7 @@ extension EntityFactory {
         let collision = CollisionComponent(shapes: [.generateSphere(radius: size)])
         collectible.components.set(collision)
         
-        print("✨ Created \(type) collectible at \(position)")
+        // print("✨ Created \(type) collectible at \(position)")
         return (collectible, entityId)
     }
     
@@ -475,7 +475,7 @@ extension EntityFactory {
             }
         }
         
-        print("✨ Created \(collectibles.count) collectibles in maze")
+        // print("✨ Created \(collectibles.count) collectibles in maze")
         return collectibles
     }
     
