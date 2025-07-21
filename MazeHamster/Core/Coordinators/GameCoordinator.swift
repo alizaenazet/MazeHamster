@@ -189,9 +189,23 @@ class GameCoordinator: ObservableObject {
         // Setup maze physics
         setupMazePhysics(entities: mazeEntities)
         
-        // Add maze entities to world
+        // Create parent container for maze entities
+        let mazeContainer = entityFactory.createContainer(name: "MazeContainer")
+        
+        // Add maze entities to container first
         for entity in mazeEntities {
-            mazeWorld.addChild(entity)
+            mazeContainer.addChild(entity)
+        }
+        
+        // Add the container to maze world
+        mazeWorld.addChild(mazeContainer)
+        mazeContainer.channelAudio = ChannelAudioComponent()
+        
+        do {
+            let resource = try AudioFileResource.load(named: "Maze-Runner-Symphony")
+            mazeContainer.playAudio(resource)
+        }catch {
+            fatalError("Failed to load audio resource: \(error)")
         }
         
         // Create collectibles throughout the maze
@@ -775,6 +789,10 @@ class GameCoordinator: ObservableObject {
         }
         
         print("🚀 Enhanced GameCoordinator with collectibles started")
+    }
+    
+    func setupMazeInitAudio(){
+        
     }
     
     func stopCoordinator() {

@@ -282,6 +282,7 @@ class AISystem: GameSystem {
         print("🤖 Enhanced AI System with pathfinding initialized")
     }
     
+    /// Update AI agents and handle pathfinding
     func update(deltaTime: TimeInterval) {
         let aiEntities = componentManager.getAllEntitiesWithComponent(AIAgentComponent.self)
         
