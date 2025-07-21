@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import RealityKit
 import simd
 
@@ -59,7 +60,10 @@ class CameraService: BaseService, CameraServiceProtocol {
         
         // Calculate height based on maze size to ensure full view and proper centering
         let maxDimension = max(Float(mazeSize.x), Float(mazeSize.y))
-        let baseCameraHeight = maxDimension * cellSize * 1.2 + (gameConfiguration.cameraHeight)
+//        let baseCameraHeight = maxDimension * cellSize * 2.0 + (gameConfiguration.cameraHeight)
+        let aspectRatio = Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height)
+        let baseCameraHeight = maxDimension * cellSize * (aspectRatio > 1.5 ? 1.8 : 2.2) * 1.5
+
         let finalCameraHeight = baseCameraHeight * gameConfiguration.cameraHeightMultiplier
         print("Camera Height - Base: \(baseCameraHeight), Multiplier: \(gameConfiguration.cameraHeightMultiplier), Final: \(finalCameraHeight)")
         return SIMD3<Float>(mazeCenterX, finalCameraHeight, mazeCenterZ)

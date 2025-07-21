@@ -27,12 +27,17 @@ class MazeService: BaseService, MazeServiceProtocol {
     
     // MARK: - Service Setup
     
-    override func setupService() {
-        super.setupService()
-        // Generate initial maze
-        maze = generateMaze(width: configuration.width, height: configuration.height)
-        print("✅ MazeService configured successfully")
+//    override func setupService() {
+//        super.setupService()
+//        // Generate initial maze
+//        maze = generateMaze(width: configuration.width, height: configuration.height)
+//        print("✅ MazeService configured successfully")
+//    }
+    
+    func setupWithConfiguration(_ config: MazeConfiguration) {
+        self.maze = generateMaze(width: config.width, height: config.height)
     }
+
     
     // MARK: - Protocol Methods
     
@@ -45,8 +50,11 @@ class MazeService: BaseService, MazeServiceProtocol {
             wallThickness: configuration.wallThickness
         )
         
+        let loopCount = max(1, (width * height) / 20)
+        print("LOOP COUNT IS: \(loopCount)")
+        
         // Use the existing MazeGenerator
-        let generator = MazeGenerator(width: width, height: height)
+        let generator = MazeGenerator(width: width, height: height, extra: loopCount)
         
         // Convert MazeGenerator grid to MazeData format
         let mazeData = MazeData(
@@ -59,6 +67,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         maze = mazeData
         
         print("🌀 Generated new maze: \(width)x\(height)")
+//        generator.addExtraPaths(count: loopCount)
         return mazeData
     }
     

@@ -23,7 +23,7 @@ class MazeGenerator {
     var height: Int
     var grid: [[MazeCell]]
 
-    init(width: Int, height: Int) {
+    init(width: Int, height: Int, extra: Int) {
         self.width = width
         self.height = height
         self.grid = (0..<width).map { x in
@@ -31,11 +31,13 @@ class MazeGenerator {
                 MazeCell(x: x, y: y)
             }
         }
-        generateMaze()
+        generateMaze(extra: extra)
     }
 
-    func generateMaze() {
+    func generateMaze(extra: Int) {
         dfs(x: 0, y: 0)
+        addExtraPaths(count: extra) // Add 2 extra paths to introduce loops
+
     }
 
     func dfs(x: Int, y: Int) {
@@ -57,4 +59,40 @@ class MazeGenerator {
             }
         }
     }
+    
+    func addExtraPaths(count: Int = 2) {
+        var added = 0
+        let directions: [(Int, Int, Wall, Wall)] = [
+            (0, -1, .top, .bottom),
+            (1, 0, .right, .left),
+            (0, 1, .bottom, .top),
+            (-1, 0, .left, .right)
+        ]
+
+        while added < count {
+            let x = Int.random(in: 0..<width)
+            let y = Int.random(in: 0..<height)
+
+            // Shuffle directions for randomness
+            for (dx, dy, wall, oppWall) in directions.shuffled() {
+                let nx = x + dx
+                let ny = y + dy
+
+                // Valid neighbor?
+                if nx >= 0, ny >= 0, nx < width, ny < height {
+                    let current = grid[x][y]
+                    let neighbor = grid[nx][ny]
+
+                    // Only remove wall if there is still a wall between them (i.e., wasn't already opened by DFS)
+                    if current.walls.contains(wall) && neighbor.walls.contains(oppWall) {
+                        grid[x][y].walls.remove(wall)
+                        grid[nx][ny].walls.remove(oppWall)
+                        added += 1
+                        break
+                    }
+                }
+            }
+        }
+    }
+
 }
