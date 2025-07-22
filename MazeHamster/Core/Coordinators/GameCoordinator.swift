@@ -812,7 +812,6 @@ class GameCoordinator: ObservableObject {
         
         // Stop services
         inputService.stopMonitoring()
-        gameService.resetGame()
         
         // Clear audio when stopping coordinator
         clearMazeWorldGameAudio()

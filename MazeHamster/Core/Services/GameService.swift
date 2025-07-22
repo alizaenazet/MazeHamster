@@ -58,7 +58,7 @@ class GameService: BaseService, GameServiceProtocol {
     }
     
     func resetGame() {
-        gameState = .menu
+        gameState = .playing
         score = 0
         gameStartTime = nil
         gameTimer?.invalidate()
@@ -124,6 +124,7 @@ class GameService: BaseService, GameServiceProtocol {
         updateScore()
         
         print("🎉 Game completed! Final score: \(score)")
+        // Remove automatic reset - let UI handle transitions
     }
     
     private func failGame() {
@@ -132,6 +133,7 @@ class GameService: BaseService, GameServiceProtocol {
         gameTimer = nil
         
         print("💥 Game failed!")
+        // Remove automatic reset - let UI handle transitions
     }
     
     // MARK: - Configuration Methods
@@ -203,14 +205,6 @@ class GameService: BaseService, GameServiceProtocol {
     private func handleStateTransition(from previousState: GameState, to newState: GameState) {
         // Handle specific state transitions
         switch (previousState, newState) {
-        case (_, .completed):
-            // Game completed
-            completeGame()
-            
-        case (_, .failed):
-            // Game failed
-            failGame()
-            
         case (.paused, .playing):
             // Resume game
             resumeGame()
@@ -224,6 +218,7 @@ class GameService: BaseService, GameServiceProtocol {
             resetGame()
             
         default:
+            // Remove automatic transitions for completed/failed states
             break
         }
     }
