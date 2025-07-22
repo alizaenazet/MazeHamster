@@ -8,7 +8,7 @@ class GameViewModel: ObservableObject {
     
     // MARK: - Published Properties
     
-    @Published var gameState: GameState = .menu
+    @Published var gameState: GameState = .playing
     @Published var score: Int = 0
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
@@ -38,7 +38,7 @@ class GameViewModel: ObservableObject {
         self.gameCoordinator = GameCoordinator()
         
         setupBindings()
-        
+
         print("🎮 Adaptive GameViewModel with screen detection initialized")
     }
     
@@ -99,7 +99,7 @@ class GameViewModel: ObservableObject {
         // Auto-start the game with spawn countdown
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.startGameWithCountdown()
-        }
+        }  
         
         print("🏗️ Adaptive scene initialized")
         print("   Maze Size: \(currentMazeSize.x)x\(currentMazeSize.y)")
@@ -152,7 +152,6 @@ class GameViewModel: ObservableObject {
         countdownTimer?.invalidate()
         countdownTimer = nil
         catSpawnCountdown = 0
-        
         print("🔄 Adaptive game reset")
     }
     
