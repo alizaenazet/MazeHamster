@@ -283,6 +283,10 @@ class AISystem: GameSystem {
     }
     
     func update(deltaTime: TimeInterval) {
+        print("COOOOK 🔥🔥🔥🔥🔥🔥🔥")
+        pathfindingService.getGridGraphDatas()
+        
+        
         let aiEntities = componentManager.getAllEntitiesWithComponent(AIAgentComponent.self)
         
         // Check if cat should start moving (after spawn delay)
@@ -351,6 +355,8 @@ class AISystem: GameSystem {
             componentManager.addComponent(aiComponent, to: entityId)
             componentManager.addComponent(pathfindingComponent, to: entityId)
             componentManager.addComponent(transformComponent, to: entityId)
+            
+            
         }
     }
     

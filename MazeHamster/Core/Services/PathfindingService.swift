@@ -51,6 +51,18 @@ class PathfindingService: BaseService {
         clearPathCache()
     }
     
+    func getGridGraphDatas() {
+        guard let mazeGridGraph = mazeService?.gridGraph, let convertedGrid = mazeService?.convertMazeToGridData() else {
+            print("Failed convert into GKGrid")
+            return
+        }
+            
+        print("mazeGridGraph: 🗺️")
+        print(mazeGridGraph)
+        
+        mazeService?.printMazeASCII()
+    }
+    
     /// Find path from start position to target position using A* algorithm
     func findPath(from startWorld: SIMD3<Float>, to targetWorld: SIMD3<Float>) -> [SIMD3<Float>] {
         guard let mazeService = mazeService else {

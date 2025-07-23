@@ -1,4 +1,5 @@
 import Foundation
+import GameplayKit
 import RealityKit
 import CoreMotion
 import Combine
@@ -23,6 +24,8 @@ protocol PhysicsServiceProtocol: ObservableObject {
 /// Protocol defining the interface for maze generation and management
 protocol MazeServiceProtocol: ObservableObject {
     var maze: MazeData { get }
+    var _gridGraph: GKGridGraph<GKGridGraphNode>? { get set }
+    var gridGraph: GKGridGraph<GKGridGraphNode> { get }
     func generateMaze(width: Int, height: Int) -> MazeData
     func createMazeEntities() -> [Entity]
 }

@@ -1,4 +1,5 @@
 import Foundation
+import GameplayKit
 import RealityKit
 import simd
 
@@ -8,6 +9,18 @@ class MazeService: BaseService, MazeServiceProtocol {
     // MARK: - Published Properties
     
     @Published var maze: MazeData
+    // Add GKGridGraph property
+    internal var _gridGraph: GKGridGraph<GKGridGraphNode>?
+
+    var gridGraph: GKGridGraph<GKGridGraphNode> {
+        if let existingGraph = _gridGraph {
+            return existingGraph
+        }
+        
+        let graph = createGridGraph()
+        _gridGraph = graph
+        return graph
+    }
     
     // MARK: - Private Properties
     
@@ -66,6 +79,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         // Update published property
         maze = mazeData
         
+        invalidateGridGraph()
         print("🌀 Generated new maze: \(width)x\(height)")
 //        generator.addExtraPaths(count: loopCount)
         return mazeData
@@ -252,4 +266,196 @@ class MazeService: BaseService, MazeServiceProtocol {
         let distance = simd_distance(position, exitPos)
         return distance < threshold
     }
+}
+
+extension MazeService {
+    private func createGridGraph() -> GKGridGraph<GKGridGraphNode> {
+            let width = maze.configuration.width
+                let height = maze.configuration.height
+            
+            // Create the grid graph
+            let graph = GKGridGraph(fromGridStartingAt: vector_int2(0, 0),
+                                   width: Int32(width),
+                                   height: Int32(height),
+                                   diagonalsAllowed: false)
+            
+            // Convert maze to grid data and remove blocked nodes
+        let gridData = generateBinaryArray()
+            var nodesToRemove: [GKGridGraphNode] = []
+            
+            for x in 0..<width {
+                for y in 0..<height {
+                    if gridData[y][x] == 1 { // Wall
+                        if let node = graph.node(atGridPosition: vector_int2(Int32(x), Int32(y))) {
+                            nodesToRemove.append(node)
+                        }
+                    }
+                }
+            }
+            
+            // Remove wall nodes from the graph
+            graph.remove(nodesToRemove)
+            
+            print("🎮 Created GKGridGraph with \(graph.nodes?.count ?? 0) walkable nodes")
+            return graph
+        }
+        
+        /// Converts wall-based maze representation to grid-based representation
+        /// Returns a 2D array where 0 = walkable, 1 = wall
+        func convertMazeToGridData() -> [[Int]] {
+            let width = maze.configuration.width
+            let height = maze.configuration.height
+            
+            // Initialize grid with all walkable cells
+            var gridData = Array(repeating: Array(repeating: 0, count: width), count: height)
+            
+            // Add border walls
+            for x in 0..<width {
+                gridData[0][x] = 1 // Top border
+                gridData[height - 1][x] = 1 // Bottom border
+            }
+            for y in 0..<height {
+                gridData[y][0] = 1 // Left border
+                gridData[y][width - 1] = 1 // Right border
+            }
+            
+            // Convert wall-based representation to grid-based
+            // This is a simplified approach - you might need to adjust based on your exact needs
+            for x in 0..<width {
+                for y in 0..<height {
+                    let cell = maze.cells[x][y]
+                    
+                    // If a cell is completely surrounded by walls, mark it as a wall
+                    let wallCount = cell.walls.count
+                    if wallCount >= 3 {
+                        gridData[y][x] = 1
+                    }
+                    
+                    // Alternative approach: check for specific wall patterns
+                    // You can customize this logic based on how you want to convert walls to grid cells
+                }
+            }
+            
+            return gridData
+        }
+        
+        /// Gets the grid coordinate for a world position (for GameplayKit)
+        func getGridCoordinate(for worldPosition: SIMD3<Float>) -> vector_int2 {
+            let cellCoord = getCellCoordinate(for: worldPosition)
+            return vector_int2(Int32(cellCoord.x), Int32(cellCoord.y))
+        }
+        
+        /// Gets the world position for a grid coordinate (from GameplayKit)
+        func getWorldPosition(for gridCoordinate: vector_int2) -> SIMD3<Float> {
+            let cellCoord = SIMD2<Int>(Int(gridCoordinate.x), Int(gridCoordinate.y))
+            return getWorldPosition(for: cellCoord)
+        }
+        
+        /// Find path between two world positions using GameplayKit pathfinding
+        func findPath(from startPosition: SIMD3<Float>, to endPosition: SIMD3<Float>) -> [SIMD3<Float>] {
+            let startGrid = getGridCoordinate(for: startPosition)
+            let endGrid = getGridCoordinate(for: endPosition)
+            
+            guard let startNode = gridGraph.node(atGridPosition: startGrid),
+                  let endNode = gridGraph.node(atGridPosition: endGrid) else {
+                print("❌ Could not find valid nodes for pathfinding")
+                return []
+            }
+            
+            let path = gridGraph.findPath(from: startNode, to: endNode) as? [GKGridGraphNode]
+            
+            return path?.map { node in
+                getWorldPosition(for: node.gridPosition)
+            } ?? []
+        }
+        
+        /// Invalidate the cached grid graph (call when maze changes)
+        private func invalidateGridGraph() {
+            _gridGraph = nil
+        }
+        
+        // ...existing code...
+    
+    private func generateBinaryArray() -> [[Int]] {
+            // Ukuran array binary: setiap cell maze menjadi posisi ganjil dalam binary array
+            // posisi genap digunakan untuk merepresentasikan dinding antar cell
+            let binaryWidth = maze.configuration.width * 2 + 1
+            let binaryHeight = maze.configuration.height * 2 + 1
+            
+            // Inisialisasi dengan semua dinding (1)
+            var binaryMaze = Array(repeating: Array(repeating: 1, count: binaryWidth), count: binaryHeight)
+            
+            // Set semua cell sebagai path (0) - posisi ganjil dalam binary array
+            for x in 0..<maze.configuration.width {
+                for y in 0..<maze.configuration.height {
+                    let binaryX = x * 2 + 1
+                    let binaryY = y * 2 + 1
+                    binaryMaze[binaryY][binaryX] = 0
+                }
+            }
+            
+            // Buat path antar cell berdasarkan dinding yang tidak ada
+            for x in 0..<maze.configuration.width {
+                for y in 0..<maze.configuration.height {
+                    let cell = maze.cells[x][y]
+                    let binaryX = x * 2 + 1
+                    let binaryY = y * 2 + 1
+                    
+                    // Jika tidak ada dinding atas, buat path ke atas
+                    if !cell.walls.contains(.top) && y > 0 {
+                        binaryMaze[binaryY - 1][binaryX] = 0
+                    }
+                    
+                    // Jika tidak ada dinding kanan, buat path ke kanan
+                    if !cell.walls.contains(.right) && x < maze.configuration.width - 1 {
+                        binaryMaze[binaryY][binaryX + 1] = 0
+                    }
+                    
+                    // Jika tidak ada dinding bawah, buat path ke bawah
+                    if !cell.walls.contains(.bottom) && y < maze.configuration.height - 1 {
+                        binaryMaze[binaryY + 1][binaryX] = 0
+                    }
+                    
+                    // Jika tidak ada dinding kiri, buat path ke kiri
+                    if !cell.walls.contains(.left) && x > 0 {
+                        binaryMaze[binaryY][binaryX - 1] = 0
+                    }
+                }
+            }
+            
+            return binaryMaze
+        }
+    
+    func printMazeASCII() {
+            print("\n🎨 ASCII MAZE VISUALIZATION:")
+            print("   ██ = Wall")
+            print("   ░░ = Path")
+            print("   🟢 = Start")
+            print("   🔴 = Exit\n")
+            
+            let binaryMaze = generateBinaryArray()
+            
+            for y in 0..<binaryMaze.count {
+                for x in 0..<binaryMaze[y].count {
+                    // Konversi koordinat binary ke koordinat sel maze
+                    let mazeX = (x - 1) / 2
+                    let mazeY = (y - 1) / 2
+                    let cellPos = SIMD2<Int>(mazeX, mazeY)
+                    
+                    if x % 2 == 1 && y % 2 == 1 && // Pastikan ini adalah posisi cell
+                       cellPos == maze.startPosition && binaryMaze[y][x] == 0 {
+                        print("🟢", terminator: "")
+                    } else if x % 2 == 1 && y % 2 == 1 &&
+                              cellPos == maze.exitPosition && binaryMaze[y][x] == 0 {
+                        print("🔴", terminator: "")
+                    } else if binaryMaze[y][x] == 1 {
+                        print("██", terminator: "")
+                    } else {
+                        print("░░", terminator: "")
+                    }
+                }
+                print()
+            }
+            print()
+        }
 }
