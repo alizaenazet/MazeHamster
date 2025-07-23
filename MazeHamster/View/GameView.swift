@@ -163,7 +163,7 @@ extension GameView {
                 gameViewModel.generateNewMaze()
             }
             .buttonStyle(GameButtonStyle(color: .purple))
-            .disabled(gameViewModel.isGameActive)
+//            .disabled(gameViewModel.isGameActive)
         }
         .padding()
         .background(Color.black.opacity(0.1))

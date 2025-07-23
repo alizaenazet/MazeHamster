@@ -92,7 +92,7 @@ class GameService: BaseService, GameServiceProtocol {
         guard let ballEntity = ballEntity,
               let mazeService = mazeService else { return false }
         
-        return mazeService.isNearExit(ballEntity.position, threshold: 0.5)
+        return mazeService.isNearExit(ballEntity.position, threshold: 1.35)
     }
     
     private func checkFailCondition() -> Bool {
