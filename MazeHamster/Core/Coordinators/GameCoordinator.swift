@@ -370,7 +370,7 @@ class GameCoordinator: ObservableObject {
             material: gameConfiguration.visualMaterials.ball
         )
         ball.position = mazeService.getStartPosition()
-        physicsService.setupBallPhysics(for: ball, withMaterial: gameConfiguration.physicsMaterials.ball)
+//        physicsService.setupBallPhysics(for: ball, withMaterial: gameConfiguration.physicsMaterials.ball)
         
         // Create ball entity for ECS tracking
         ballEntityId = UUID()

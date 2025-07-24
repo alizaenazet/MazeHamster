@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		53B2CDD42E3150870038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDD32E3150870038FC36 /* MazeHamsterAssets */; };
+		53B2CDE02E3154A10038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDDF2E3154A10038FC36 /* MazeHamsterAssets */; };
+		53B2CDE32E3154DD0038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDE22E3154DD0038FC36 /* MazeHamsterAssets */; };
+		53B2CDE62E3155C00038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		53A73FC72E2598D000FAD660 /* MazeHamster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MazeHamster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +30,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53B2CDD42E3150870038FC36 /* MazeHamsterAssets in Frameworks */,
+				53B2CDE62E3155C00038FC36 /* MazeHamsterAssets in Frameworks */,
+				53B2CDE02E3154A10038FC36 /* MazeHamsterAssets in Frameworks */,
+				53B2CDE32E3154DD0038FC36 /* MazeHamsterAssets in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +76,10 @@
 			);
 			name = MazeHamster;
 			packageProductDependencies = (
+				53B2CDD32E3150870038FC36 /* MazeHamsterAssets */,
+				53B2CDDF2E3154A10038FC36 /* MazeHamsterAssets */,
+				53B2CDE22E3154DD0038FC36 /* MazeHamsterAssets */,
+				53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */,
 			);
 			productName = MazeHamster;
 			productReference = 53A73FC72E2598D000FAD660 /* MazeHamster.app */;
@@ -94,6 +109,9 @@
 			);
 			mainGroup = 53A73FBE2E2598D000FAD660;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				530F2AC22E31ED3F00B7FD8C /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53A73FC82E2598D000FAD660 /* Products */;
 			projectDirPath = "";
@@ -260,8 +278,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -300,8 +318,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -341,6 +359,32 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		530F2AC22E31ED3F00B7FD8C /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../temporary/MazeHamsterAssets;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		53B2CDD32E3150870038FC36 /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
+		53B2CDDF2E3154A10038FC36 /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
+		53B2CDE22E3154DD0038FC36 /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
+		53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 53A73FBF2E2598D000FAD660 /* Project object */;
 }

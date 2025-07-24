@@ -24,24 +24,35 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
             return
         }
         
-        // Create physics body component
-        let physicsBody = PhysicsBodyComponent(
-            shapes: [.generateSphere(radius: radius)],
-            mass: 1.0,
+        // Remove any existing physics components first (important for loaded models)
+        entity.components.remove(PhysicsBodyComponent.self)
+        entity.components.remove(CollisionComponent.self)
+        
+        // Use physics radius that provides stable collision without penetration
+        let physicsRadius = radius * 0.9  // Only 10% smaller for very stable physics
+        
+        // Create physics body component with stable properties
+        var physicsBody = PhysicsBodyComponent(
+            shapes: [.generateSphere(radius: physicsRadius)],
+            mass: 1.5,  // Lighter mass for better responsiveness
             material: material,
             mode: .dynamic
         )
         
+        // Add strong damping to prevent erratic behavior and ensure smooth stops
+        physicsBody.linearDamping = 0.8   // Very high damping for immediate stops
+        physicsBody.angularDamping = 0.9  // Very high angular damping to prevent spinning
+        
         // Create collision component
         let collision = CollisionComponent(
-            shapes: [.generateSphere(radius: radius)]
+            shapes: [.generateSphere(radius: physicsRadius)]
         )
         
         // Apply components to entity
         entity.components.set(physicsBody)
         entity.components.set(collision)
         
-        print("🎯 Ball physics setup complete for entity: \(entity.name)")
+        print("🎯 Stable ball physics setup - radius: \(physicsRadius), mass: 1.5, high damping for natural stops")
     }
     
     func setupWallPhysics(for entity: Entity, size: SIMD3<Float>) {
@@ -90,21 +101,19 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
         // Apply gravitational force to ball based on tilt
         guard ball.components[PhysicsBodyComponent.self]?.mode == .dynamic else { return }
         
-        // Calculate force based on tilt (simplified physics)
-        let forceMultiplier: Float = 5.0
-        let forceX = sin(tiltData.roll) * forceMultiplier   // Corrected left/right direction
-        let forceZ = -sin(tiltData.pitch) * forceMultiplier  // Inverted for correct direction
+        // Reduce force for gentler, more controllable movement
+        let forceMultiplier: Float = 2.5  // Reduced from 5.0 for smoother control
+        let forceX = sin(tiltData.roll) * forceMultiplier
+        let forceZ = -sin(tiltData.pitch) * forceMultiplier
         let force = SIMD3<Float>(forceX, 0, forceZ)
         
         // Apply force by modifying ball position (simplified approach)
         let currentPosition = ball.position
         let newPosition = currentPosition + force * 0.016 // Assuming 60fps
-        ball.move(to: Transform(scale: ball.transform.scale, 
-                              rotation: ball.transform.rotation, 
-                              translation: newPosition), 
+        ball.move(to: Transform(scale: ball.transform.scale,
+                              rotation: ball.transform.rotation,
+                              translation: newPosition),
                  relativeTo: ball.parent)
-        
-        print("🎯 Applied tilt force: \(force) to ball")
     }
     
     // MARK: - Helper Methods
@@ -112,9 +121,6 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
     private func getBallRadius(from entity: Entity) -> Float? {
         // Check if entity has a model component
         if entity.components.has(ModelComponent.self) {
-            // Try to extract radius from sphere mesh
-            // This is a simplified approach - in a real implementation,
-            // you might want to store radius as a custom component
             return 0.2 // Default ball radius from original code
         }
         return nil
@@ -127,9 +133,6 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
             return
         }
         
-        // Apply impulse by modifying velocity if available
-        // Note: RealityKit's PhysicsBodyComponent may not have direct velocity properties
-        // This would typically be handled by the physics engine itself
         print("🎯 Applied impulse force: \(impulse) to entity: \(entity.name)")
     }
     
@@ -140,9 +143,6 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
             return
         }
         
-        // Apply torque by modifying angular velocity if available
-        // Note: RealityKit's PhysicsBodyComponent may not have direct angular velocity properties
-        // This would typically be handled by the physics engine itself
         print("🎯 Applied torque: \(torque) to entity: \(entity.name)")
     }
     
@@ -163,8 +163,6 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
             // Re-enable physics if it was disabled
             guard entity.components[PhysicsBodyComponent.self] == nil else { return }
             
-            // You would need to restore the physics body here
-            // This requires storing the original configuration
             print("ℹ️ Physics restoration not implemented - create new physics body")
         } else {
             // Disable physics by removing the physics body
@@ -172,4 +170,4 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
             print("🚫 Physics disabled for entity: \(entity.name)")
         }
     }
-} 
+}
