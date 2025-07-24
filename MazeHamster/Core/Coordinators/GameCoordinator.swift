@@ -271,7 +271,6 @@ class GameCoordinator: ObservableObject {
         return createGameSceneWithCollectibles()
     }
     
-    /// Generate a new maze with adaptive sizing and collectibles
     func generateNewMaze() {
         systemStatus = .initializing
         
@@ -284,15 +283,170 @@ class GameCoordinator: ObservableObject {
         // Clear existing collectibles
         clearCollectibles()
         
-        // Generate new maze with adaptive size
-        _ = mazeService.generateMaze(
-            width: gameConfiguration.maze.width,
-            height: gameConfiguration.maze.height
-        )
+        // --- Step 1: Remove old ball and cat ---
+        if let mazeWorld = mazeWorldEntity {
+            mazeWorld.children.removeAll(where: { $0.name == "MazeBall" || $0.name == "CatAgent" })
+        }
+        
+        ballEntityId = nil
+        catEntityId = nil
+        
+        mazeService.setupWithConfiguration(gameConfiguration.maze)
+        
+        // CRITICAL: Recreate the visual maze entities
+        recreateVisualMaze()
+        
+        // Recreate collectibles for the new maze
+        recreateCollectiblesForNewMaze()
+        
+        // Reset entity positions
+        resetEntityPositionsForNewMaze()
+
+        // 8. Recreate and register new ball & cat
+        let newBall = createAdaptiveBall()
+        mazeWorldEntity?.addChild(newBall)
+        gameService.setBallEntity(newBall)
+
+        let newCat = createAdaptiveCat()
+        mazeWorldEntity?.addChild(newCat)
+
+        // --- Step 2: Clear ECS components for old ball and cat ---
+        if let oldBallId = ballEntityId {
+            ecsWorld.componentManager.removeAllComponents(for: oldBallId)
+        }
+        if let oldCatId = catEntityId {
+            ecsWorld.componentManager.removeAllComponents(for: oldCatId)
+        }
+
+        // Clear the ECS world for good measure (optional but safer)
+//        ecsWorld.clearAllEntities()
         
         systemStatus = .ready
-        print("🌀 New adaptive maze with collectibles generated: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
+        
+        print("🌀 New adaptive maze with visual recreation generated: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
+        print("   Collectibles recreated: \(collectibleEntities.count)")
     }
+
+    // MARK: - Helper method to recreate visual maze
+
+    /// Recreate all visual maze entities (walls, floors) for the new maze layout
+    private func recreateVisualMaze() {
+        guard let mazeWorld = currentScene?.children.first(where: { $0.name == "MazeWorld" }) else {
+            print("⚠️ Could not find MazeWorld to recreate maze")
+            return
+        }
+        
+        // Remove all existing maze entities (walls and floors)
+        let entitiesToRemove = mazeWorld.children.filter { entity in
+            entity.name.contains("Wall") || entity.name.contains("Floor")
+        }
+        
+        for entity in entitiesToRemove {
+            entity.removeFromParent()
+        }
+        
+        print("🗑️ Removed \(entitiesToRemove.count) old maze entities")
+        
+        // Create new maze entities with the new layout
+        let newMazeEntities = mazeService.createMazeEntities()
+        
+        // Setup physics for new maze entities
+        setupMazePhysics(entities: newMazeEntities)
+        
+        // Add new maze entities to the world
+        for entity in newMazeEntities {
+            mazeWorld.addChild(entity)
+        }
+        
+        print("✨ Created \(newMazeEntities.count) new maze entities")
+    }
+
+    /// Reset entity positions after maze recreation
+    private func resetEntityPositionsForNewMaze() {
+        guard let scene = currentScene else { return }
+        
+        scene.children.forEach { child in
+            if child.name == "MazeWorld" {
+                child.children.forEach { grandChild in
+                    if grandChild.name == "MazeBall" {
+                        // Reset ball to new start position
+                        grandChild.position = mazeService.getStartPosition()
+                        
+                        // Reset physics velocity
+                        if let physicsBody = grandChild.components[PhysicsBodyComponent.self] {
+                            var newPhysicsBody = physicsBody
+//                            newPhysicsBody.linearVelocity = SIMD3<Float>(0, 0, 0)
+//                            newPhysicsBody.angularVelocity = SIMD3<Float>(0, 0, 0)
+                            grandChild.components[PhysicsBodyComponent.self] = newPhysicsBody
+                        }
+                        
+                        // Reset player status
+                        if let ballEntityId = ballEntityId {
+                            let resetPlayerStatus = PlayerStatusComponent(entityId: ballEntityId)
+                            ecsWorld.componentManager.addComponent(resetPlayerStatus, to: ballEntityId)
+                        }
+                        
+                    } else if grandChild.name == "CatAgent" {
+                        // Reset cat to new position relative to ball
+                        let ballStartPosition = mazeService.getStartPosition()
+                        let offsetDistance = gameConfiguration.maze.cellSize * 2.0
+                        let catStartPosition = ballStartPosition + SIMD3<Float>(offsetDistance, 0, offsetDistance)
+                        grandChild.position = catStartPosition
+                        
+                        // Reset cat's ECS components
+                        if let catEntityId = catEntityId,
+                           var catTransform = ecsWorld.componentManager.getComponent(TransformComponent.self, for: catEntityId),
+                           var catAI = ecsWorld.componentManager.getComponent(AIAgentComponent.self, for: catEntityId),
+                           var catPathfinding = ecsWorld.componentManager.getComponent(PathfindingComponent.self, for: catEntityId) {
+                            
+                            catTransform.position = catStartPosition
+                            catAI.startSleep() // Restart sleep when resetting
+                            
+                            // Clear current pathfinding state
+                            catPathfinding.currentPath = []
+                            catPathfinding.currentPathIndex = 0
+                            catPathfinding.isFollowingPath = false
+                            
+                            ecsWorld.componentManager.addComponent(catTransform, to: catEntityId)
+                            ecsWorld.componentManager.addComponent(catAI, to: catEntityId)
+                            ecsWorld.componentManager.addComponent(catPathfinding, to: catEntityId)
+                        }
+                    }
+                }
+            }
+        }
+        
+        print("🔄 Reset entity positions for new maze layout")
+    }
+
+    // MARK: - Helper method to recreate collectibles
+
+    /// Recreate collectibles when generating a new maze
+    private func recreateCollectiblesForNewMaze() {
+        guard let mazeWorld = currentScene?.children.first(where: { $0.name == "MazeWorld" }) else {
+            print("⚠️ Could not find MazeWorld to add collectibles")
+            return
+        }
+        
+        // Create new collectibles for the new maze layout
+        collectibleEntities = entityFactory.createMazeCollectibles(
+            mazeService: mazeService,
+            componentManager: ecsWorld.componentManager
+        )
+        
+        // Register collectibles with collectible system and add to world
+        if let collectibleSystem = ecsWorld.getSystem(CollectibleSystem.self) {
+            for (collectibleEntity, collectibleId) in collectibleEntities {
+                collectibleSystem.registerEntity(collectibleEntity, with: collectibleId)
+                mazeWorld.addChild(collectibleEntity)
+            }
+            // Ensure required keys setting is maintained
+            collectibleSystem.setRequiredKeys(requiredKeysForExit)
+        }
+        
+        print("✨ Recreated \(collectibleEntities.count) collectibles for new maze")
+    }
+
     
     /// Force refresh adaptive configuration (useful when screen rotates)
     func refreshAdaptiveConfiguration() {
@@ -488,7 +642,7 @@ class GameCoordinator: ObservableObject {
         guard let ballEntity = currentScene?.children.first(where: { $0.name == "MazeWorld" })?.children.first(where: { $0.name == "MazeBall" }) else { return }
         
         // Check if near exit
-        let nearExit = mazeService.isNearExit(ballEntity.position, threshold: 0.5)
+        let nearExit = mazeService.isNearExit(ballEntity.position, threshold: 1.35)
         
         // Check if player has required keys
         let hasRequiredKeys = canPlayerExit()

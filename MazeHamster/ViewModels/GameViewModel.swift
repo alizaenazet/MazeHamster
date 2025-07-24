@@ -83,6 +83,23 @@ class GameViewModel: ObservableObject {
                 self?.updateDebugInfo()
             }
             .store(in: &cancellables)
+        
+        gameCoordinator.getGameService().$gameState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newState in
+                self?.gameState = newState
+                self?.handleGameStateChange(newState)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func handleGameStateChange(_ state: GameState) {
+        if state == .completed {
+            print("✅ Level completed. Preparing next level...")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.generateNewMaze()
+            }
+        }
     }
     
     // MARK: - Public Methods
@@ -162,19 +179,50 @@ class GameViewModel: ObservableObject {
     }
     
     /// Generate a new maze with current screen-optimal size
+    /// Generate a new maze with current screen-optimal size
     func generateNewMaze() {
-        isLoading = true
-        defer { isLoading = false }
+        print("🌀 Starting new maze generation...")
         
-        // Stop countdown during maze generation
+        // Set loading state
+        isLoading = true
+        
+        // Stop any running countdown
         countdownTimer?.invalidate()
         countdownTimer = nil
         catSpawnCountdown = 0
         
-        // Generate new adaptive maze
-        gameCoordinator.generateNewMaze()
+        // Clear any error messages
+        clearError()
         
-        print("🌀 New adaptive maze generated: \(currentMazeSize.x)x\(currentMazeSize.y)")
+        // Stop the coordinator first to ensure clean state
+        gameCoordinator.stopCoordinator()
+        
+        // Brief delay to ensure all systems have stopped
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // Reset the game state
+            self.gameCoordinator.resetGame()
+            
+            // Generate the new maze layout
+            self.gameCoordinator.generateNewMaze()
+            
+            // Another brief delay to ensure maze generation is complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                // Start the coordinator again
+                self.gameCoordinator.startCoordinator()
+                
+                // Start the game with countdown
+                self.gameCoordinator.getGameService().startGame()
+                self.startCatSpawnCountdown()
+                
+                // Clear loading state
+                self.isLoading = false
+                
+                print("🌀 New adaptive maze generated and game started: \(self.currentMazeSize.x)x\(self.currentMazeSize.y)")
+                
+                // Log the event for debugging
+                self.logAdaptiveGameEvent(.adaptiveMazeGenerated(size: self.currentMazeSize))
+            }
+        }
     }
     
     /// Force refresh adaptive configuration (useful on orientation change)

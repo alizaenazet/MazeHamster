@@ -626,6 +626,12 @@ class ECSWorld: ObservableObject {
         setupSystems()
     }
     
+    func clearAllComponents() {
+//        componentManager.clearAll()
+        print("🧹 ECS World: All components cleared")
+    }
+
+    
     private func setupSystems() {
         systems = [
             PhysicsSystem(componentManager: componentManager),
