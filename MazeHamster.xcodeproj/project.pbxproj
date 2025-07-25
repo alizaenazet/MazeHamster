@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		471415722E333F880062F1EE /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 471415712E333F880062F1EE /* MazeHamsterAssets */; };
 		53B2CDD42E3150870038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDD32E3150870038FC36 /* MazeHamsterAssets */; };
 		53B2CDE02E3154A10038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDDF2E3154A10038FC36 /* MazeHamsterAssets */; };
 		53B2CDE32E3154DD0038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDE22E3154DD0038FC36 /* MazeHamsterAssets */; };
 		53B2CDE62E3155C00038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */; };
+		53DB0C7C2E33C86700C19F69 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53DB0C7B2E33C86700C19F69 /* MazeHamsterAssets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,10 +32,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				471415722E333F880062F1EE /* MazeHamsterAssets in Frameworks */,
 				53B2CDD42E3150870038FC36 /* MazeHamsterAssets in Frameworks */,
 				53B2CDE62E3155C00038FC36 /* MazeHamsterAssets in Frameworks */,
 				53B2CDE02E3154A10038FC36 /* MazeHamsterAssets in Frameworks */,
 				53B2CDE32E3154DD0038FC36 /* MazeHamsterAssets in Frameworks */,
+				53DB0C7C2E33C86700C19F69 /* MazeHamsterAssets in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +84,8 @@
 				53B2CDDF2E3154A10038FC36 /* MazeHamsterAssets */,
 				53B2CDE22E3154DD0038FC36 /* MazeHamsterAssets */,
 				53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */,
+				471415712E333F880062F1EE /* MazeHamsterAssets */,
+				53DB0C7B2E33C86700C19F69 /* MazeHamsterAssets */,
 			);
 			productName = MazeHamster;
 			productReference = 53A73FC72E2598D000FAD660 /* MazeHamster.app */;
@@ -110,7 +116,7 @@
 			mainGroup = 53A73FBE2E2598D000FAD660;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				530F2AC22E31ED3F00B7FD8C /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */,
+				53DB0C7A2E33C86700C19F69 /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53A73FC82E2598D000FAD660 /* Products */;
@@ -361,13 +367,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		530F2AC22E31ED3F00B7FD8C /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */ = {
+		53DB0C7A2E33C86700C19F69 /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../../temporary/MazeHamsterAssets;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		471415712E333F880062F1EE /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
 		53B2CDD32E3150870038FC36 /* MazeHamsterAssets */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MazeHamsterAssets;
@@ -381,6 +391,10 @@
 			productName = MazeHamsterAssets;
 		};
 		53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
+		53DB0C7B2E33C86700C19F69 /* MazeHamsterAssets */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MazeHamsterAssets;
 		};

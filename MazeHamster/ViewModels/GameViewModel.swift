@@ -172,11 +172,11 @@ class GameViewModel: ObservableObject {
         print("🔄 Adaptive game reset")
     }
     
-    /// Clear all audio in Mazeworld
-    func clearAudio() {
-        gameCoordinator.clearMazeWorldGameAudio()
-        print("🔇 Audio clearing requested from GameViewModel")
-    }
+//    /// Clear all audio in Mazeworld
+//    func clearAudio() {
+//        gameCoordinator.clearMazeWorldGameAudio()
+//        print("🔇 Audio clearing requested from GameViewModel")
+//    }
     
     /// Generate a new maze with current screen-optimal size
     /// Generate a new maze with current screen-optimal size
@@ -247,7 +247,7 @@ class GameViewModel: ObservableObject {
     /// Handle view disappearing
     func viewWillDisappear() {
         // Clear audio first before stopping coordinator
-        clearAudio()
+//        clearAudio()
         
         gameCoordinator.stopCoordinator()
         countdownTimer?.invalidate()
@@ -385,7 +385,7 @@ class GameViewModel: ObservableObject {
     
     deinit {
         // Ensure audio is cleared on deallocation
-        clearAudio()
+//        clearAudio()
         gameCoordinator.stopCoordinator()
         countdownTimer?.invalidate()
         cancellables.removeAll()
