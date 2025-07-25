@@ -30,7 +30,7 @@ struct GameView: View {
             print("Clearing audio resources...")
             
             // Clear audio immediately when view disappears
-            gameViewModel.clearAudio()
+//            gameViewModel.clearAudio()
             
             // Small delay to ensure audio cleanup completes
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

@@ -11,8 +11,10 @@ class GameCoordinator: ObservableObject {
     @Published var systemStatus: SystemStatus = .idle
     @Published var currentMazeSize: SIMD2<Int> = SIMD2<Int>(6, 8)
     @Published var adaptiveInfo: String = ""
-    @Published var collectionProgress: CollectionProgress = CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: 1)
+    // requiredKeys di CollectionProgress sekarang 0 karena kunci dihilangkan
+    @Published var collectionProgress: CollectionProgress = CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: 0)
     @Published var playerEffects: String = "None"
+    // canPlayerExitMaze sekarang harus true jika pemain mencapai pintu keluar (tidak ada lagi kunci)
     @Published var canPlayerExitMaze: Bool = true
     
     // MARK: - Services
@@ -42,7 +44,8 @@ class GameCoordinator: ObservableObject {
     // MARK: - Collectible System
     
     private var collectibleEntities: [(Entity, UUID)] = []
-    private var requiredKeysForExit: Int = 1
+    // requiredKeysForExit sekarang 0 karena kunci dihilangkan
+    private var requiredKeysForExit: Int = 0
     
     // MARK: - Combine
     
@@ -66,7 +69,8 @@ class GameCoordinator: ObservableObject {
         self.gameConfiguration = configuration ?? AdaptiveConfigurationFactory.createOptimalConfiguration()
         
         // Initialize ECS with enhanced pathfinding and collectibles
-        self.ecsWorld = ECSWorld(pathfindingService: pathfindingService)
+        // ECSWorld sekarang yang akan menginisialisasi SoundPlayer dan memuat suara.
+        self.ecsWorld = ECSWorld(pathfindingService: pathfindingService, gameService: gameService, mazeService: mazeService)
         
         setupCoordinator()
     }
@@ -82,6 +86,7 @@ class GameCoordinator: ObservableObject {
         setupBindings()
         
         // Initialize ECS
+        // Ini akan memicu ECSWorld.initialize() yang memuat SoundPlayer dan semua SFX
         ecsWorld.initialize()
         
         // Update configuration based on screen detection
@@ -170,22 +175,19 @@ class GameCoordinator: ObservableObject {
         print("📱 Screen changed - adaptive configuration updated")
     }
     
-    
-    
+    // Metode ini dihapus karena audio kini dikelola oleh SoundPlayer dan ECSWorld.
+    // Panggilan untuk ini di GameViewModel sudah Anda hapus.
+    /*
     func clearMazeWorldGameAudio() {
         guard let mazeWorld = mazeWorldEntity else {
             print("⚠️ No mazeWorld entity reference found")
             return
         }
-        
-        // Stop all audio on the mazeWorld entity
         mazeWorld.stopAllAudio()
-        
-        // Remove the audio channel component
         mazeWorld.components.remove(ChannelAudioComponent.self)
-        
         print("🔇 Successfully cleared all game audio from MazeWorld")
     }
+    */
     
     // MARK: - Enhanced Scene Creation with Collectibles
     
@@ -215,6 +217,8 @@ class GameCoordinator: ObservableObject {
             mazeWorld.addChild(entity)
         }
         
+        // Latar belakang audio RealityKit dihapus, karena audio kini dikelola oleh SoundPlayer.
+        /*
         mazeWorld.channelAudio = ChannelAudioComponent()
         do {
             let resource = try AudioFileResource.load(named: "Maze-Runner-Symphony")
@@ -222,6 +226,7 @@ class GameCoordinator: ObservableObject {
         } catch {
             fatalError("Failed to create maze world audio channel: \(error)")
         }
+        */
         
         // Create collectibles throughout the maze
         collectibleEntities = entityFactory.createMazeCollectibles(
@@ -236,7 +241,19 @@ class GameCoordinator: ObservableObject {
                 mazeWorld.addChild(collectibleEntity)
             }
             collectibleSystem.setGameService(gameService)
+            // requiredKeysForExit sekarang 0 karena kunci dihilangkan
             collectibleSystem.setRequiredKeys(requiredKeysForExit)
+            
+            // Panggilan setPlayerEntityId dan setCatEntityId dihapus dari sini.
+            // CollectibleSystem sekarang mencari ID entitas sendiri secara langsung.
+            /*
+            if let ballId = self.ballEntityId {
+                collectibleSystem.setPlayerEntityId(ballId)
+            }
+            if let catId = self.catEntityId {
+                collectibleSystem.setCatEntityId(catId)
+            }
+            */
         }
         
         // Create and setup ball with adaptive sizing
@@ -261,7 +278,7 @@ class GameCoordinator: ObservableObject {
         print("🏗️ Enhanced game scene with collectibles created successfully")
         print("   Maze: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
         print("   Collectibles: \(collectibleEntities.count)")
-        print("   Required Keys: \(requiredKeysForExit)")
+        print("   Required Keys: \(requiredKeysForExit)") // Ini sekarang akan selalu 0
         
         return scene
     }
@@ -310,17 +327,22 @@ class GameCoordinator: ObservableObject {
     
     /// Check if player can exit (has required keys)
     func canPlayerExit() -> Bool {
-        guard let collectibleSystem = getCollectibleSystem(),
-              let ballEntityId = ballEntityId else { return true }
-        
-        return collectibleSystem.canPlayerExit(playerId: ballEntityId)
+        // Karena kunci dihilangkan, metode ini sekarang akan selalu true.
+        // Kondisi keluar sepenuhnya dikelola oleh GameLogicSystem.
+        return true
     }
     
     /// Get collection progress for UI
     func getCollectionProgress() -> CollectionProgress {
-        guard let collectibleSystem = getCollectibleSystem(),
-              let ballEntityId = ballEntityId else {
-            return CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: requiredKeysForExit)
+        guard let collectibleSystem = getCollectibleSystem() else {
+            // requiredKeys di CollectionProgress sekarang 0
+            return CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: 0)
+        }
+        
+        // Cari ID bola menggunakan GameEntityComponent untuk mendapatkan PlayerStatusComponent
+        guard let ballEntityId = (ecsWorld.componentManager.getAllEntitiesWithComponent(GameEntityComponent.self)
+            .first { ecsWorld.componentManager.getComponent(GameEntityComponent.self, for: $0)?.entityType == .ball }) else {
+            return CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: 0)
         }
         
         return collectibleSystem.getCollectionProgress(for: ballEntityId)
@@ -328,14 +350,19 @@ class GameCoordinator: ObservableObject {
     
     /// Get player status for effects display
     func getPlayerStatus() -> PlayerStatusComponent? {
-        guard let collectibleSystem = getCollectibleSystem(),
-              let ballEntityId = ballEntityId else { return nil }
-        
+        guard let collectibleSystem = getCollectibleSystem() else { return nil }
+        // Cari ID bola menggunakan GameEntityComponent untuk mendapatkan PlayerStatusComponent
+        guard let ballEntityId = (ecsWorld.componentManager.getAllEntitiesWithComponent(GameEntityComponent.self)
+            .first { ecsWorld.componentManager.getComponent(GameEntityComponent.self, for: $0)?.entityType == .ball }) else {
+            return nil
+        }
         return collectibleSystem.getPlayerStatus(for: ballEntityId)
     }
     
     /// Set number of keys required to exit
     func setRequiredKeys(_ count: Int) {
+        // Metode ini mungkin tidak lagi relevan jika kunci tidak digunakan.
+        // Jika tetap ingin melacaknya untuk skor/statistik, bisa dipertahankan, tapi nilainya tidak dipakai untuk keluar.
         requiredKeysForExit = count
         if let collectibleSystem = getCollectibleSystem() {
             collectibleSystem.setRequiredKeys(count)
@@ -357,7 +384,8 @@ class GameCoordinator: ObservableObject {
         
         DispatchQueue.main.async { [weak self] in
             self?.collectionProgress = progress
-            self?.canPlayerExitMaze = progress.canExit
+            // canPlayerExitMaze sekarang akan selalu true karena tidak ada lagi kunci
+            self?.canPlayerExitMaze = true
             self?.playerEffects = playerStatus?.activeEffectsDescription ?? "None"
         }
     }
@@ -477,6 +505,7 @@ class GameCoordinator: ObservableObject {
         gameService.updateGameState()
         
         // Check enhanced win condition with collectibles
+        // Kondisi kemenangan tidak lagi melibatkan kunci
         checkEnhancedWinCondition()
         
         // Update performance metrics
@@ -490,14 +519,15 @@ class GameCoordinator: ObservableObject {
         // Check if near exit
         let nearExit = mazeService.isNearExit(ballEntity.position, threshold: 0.5)
         
-        // Check if player has required keys
-        let hasRequiredKeys = canPlayerExit()
+        // Kunci dihilangkan, jadi player selalu "bisa" keluar jika sudah dekat pintu keluar.
+        let canPlayerExitNow = true
         
-        if nearExit && hasRequiredKeys && gameService.gameState == .playing {
+        if nearExit && canPlayerExitNow && gameService.gameState == .playing {
             gameService.setGameState(.completed)
-            print("🎉 Game completed with collectibles! Keys collected: \(collectionProgress.keys)/\(collectionProgress.requiredKeys)")
-        } else if nearExit && !hasRequiredKeys {
-            print("🔒 Player at exit but missing keys: \(collectionProgress.keys)/\(collectionProgress.requiredKeys)")
+            print("🎉 Game completed! Player reached exit.")
+        } else if nearExit && !canPlayerExitNow {
+            // Logika ini mungkin tidak lagi dibutuhkan jika canPlayerExitNow selalu true
+            print("🔒 Player at exit but cannot exit yet (logic removed - check if you need other conditions)")
         }
     }
     
@@ -511,8 +541,10 @@ class GameCoordinator: ObservableObject {
         }
         
         // Reset collectible progress
-        collectionProgress = CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: requiredKeysForExit)
+        // requiredKeys di CollectionProgress sekarang 0
+        collectionProgress = CollectionProgress(totalItems: 0, collectedItems: 0, keys: 0, requiredKeys: 0)
         playerEffects = "None"
+        // canPlayerExitMaze sekarang true
         canPlayerExitMaze = true
         
         // Reset positions if scene exists
@@ -535,9 +567,20 @@ class GameCoordinator: ObservableObject {
                         grandChild.position = mazeService.getStartPosition()
                         
                         // Reset player status
-                        if let ballEntityId = ballEntityId {
-                            let resetPlayerStatus = PlayerStatusComponent(entityId: ballEntityId)
-                            ecsWorld.componentManager.addComponent(resetPlayerStatus, to: ballEntityId)
+                        if let ballEntityId = ballEntityId,
+                           var playerStatus = ecsWorld.componentManager.getComponent(PlayerStatusComponent.self, for: ballEntityId) {
+                            // Mereset semua properti PlayerStatusComponent ke nilai default atau nol
+                            playerStatus.hasSpeedBoost = false
+                            playerStatus.hasShield = false
+                            playerStatus.isSlowMotion = false
+                            playerStatus.collectedKeys = 0 // Tetap reset jika digunakan untuk skor
+                            playerStatus.totalCollectibles = 0
+                            playerStatus.speedBoostEndTime = nil
+                            playerStatus.shieldEndTime = nil
+                            playerStatus.slowMotionEndTime = nil
+                            
+                            ecsWorld.componentManager.addComponent(playerStatus, to: ballEntityId)
+                            print("🔄 PlayerStatusComponent reset for ballEntityId: \(ballEntityId)")
                         }
                         
                     } else if grandChild.name == "CatAgent" {
@@ -563,6 +606,13 @@ class GameCoordinator: ObservableObject {
                             ecsWorld.componentManager.addComponent(catTransform, to: catEntityId)
                             ecsWorld.componentManager.addComponent(catAI, to: catEntityId)
                             ecsWorld.componentManager.addComponent(catPathfinding, to: catEntityId)
+
+                            // Reset CatStatusComponent
+                            if let catStatus = ecsWorld.componentManager.getComponent(CatStatusComponent.self, for: catEntityId) {
+                                var resetCatStatus = CatStatusComponent(entityId: catEntityId) // Buat instance baru untuk reset total
+                                ecsWorld.componentManager.addComponent(resetCatStatus, to: catEntityId)
+                                print("🔄 CatStatusComponent reset for catEntityId: \(catEntityId)")
+                            }
                         }
                         
                     } else if grandChild.name.contains("Collectible") {
@@ -573,6 +623,8 @@ class GameCoordinator: ObservableObject {
                         if let collectibleId = collectibleEntities.first(where: { $0.0 == grandChild })?.1,
                            var collectibleComponent = ecsWorld.componentManager.getComponent(CollectibleComponent.self, for: collectibleId) {
                             collectibleComponent.isCollected = false
+                            collectibleComponent.pulseAnimation = 0.0 // Reset animasi
+                            collectibleComponent.rotationSpeed = 2.0 // Reset rotasi
                             ecsWorld.componentManager.addComponent(collectibleComponent, to: collectibleId)
                         }
                     }
@@ -605,19 +657,31 @@ class GameCoordinator: ObservableObject {
     }
     
     private func handleInputChange(_ tiltData: TiltData) {
-        // Apply input to ball, considering speed boost effect
+        // Apply input to ball, considering speed boost and slow motion effect
         guard let ballEntity = currentScene?.children.first(where: { $0.name == "MazeWorld" })?.children.first(where: { $0.name == "MazeBall" }) else { return }
         
         var modifiedTiltData = tiltData
         
+        // Dapatkan status pemain terbaru
+        let playerStatus = getPlayerStatus()
+        
         // Check for speed boost effect
-        if let playerStatus = getPlayerStatus(), playerStatus.hasSpeedBoost {
+        if let currentStatus = playerStatus, currentStatus.hasSpeedBoost {
             // Increase tilt sensitivity for speed boost
             modifiedTiltData = TiltData(
                 roll: tiltData.roll * 1.5,
                 pitch: tiltData.pitch * 1.5,
                 timestamp: tiltData.timestamp
             )
+            print("🚀 Player Speed Boost active!")
+        } else if let currentStatus = playerStatus, currentStatus.isSlowMotion {
+            // Decrease tilt sensitivity for slow motion
+            modifiedTiltData = TiltData(
+                roll: tiltData.roll * 0.5, // Misalnya, 50% lebih lambat
+                pitch: tiltData.pitch * 0.5,
+                timestamp: tiltData.timestamp
+            )
+            print("🐌 Player Slow Motion active!")
         }
         
         physicsService.applyTiltToBall(ballEntity, tiltData: modifiedTiltData)
@@ -638,9 +702,9 @@ class GameCoordinator: ObservableObject {
         pathfindingService.clearPathVisualization()
         
         let finalProgress = getCollectionProgress()
-        print("🎉 Game completed with collectibles - coordinator handling")
-        print("   Final Collection: \(finalProgress.collectedItems)/\(finalProgress.totalItems)")
-        print("   Keys Found: \(finalProgress.keys)/\(finalProgress.requiredKeys)")
+        print("🎉 Game completed! Final Collection: \(finalProgress.collectedItems)/\(finalProgress.totalItems)")
+        // Kunci tidak lagi relevan
+        // print("   Keys Found: \(finalProgress.keys)/\(finalProgress.requiredKeys)")
         print("   Completion: \(Int(finalProgress.completionPercentage * 100))%")
     }
     
@@ -761,7 +825,7 @@ class GameCoordinator: ObservableObject {
         info += "Running: \(isRunning)\n"
         info += "Current Maze: \(currentMazeSize.x)x\(currentMazeSize.y)\n"
         info += "Collectibles: \(collectibleEntities.count)\n"
-        info += "Collection Progress: \(collectionProgress.description)\n"
+        info += "Collection Progress: \(collectionProgress.description)\n" // Tidak lagi menampilkan kunci
         info += "Player Effects: \(playerEffects)\n"
         info += "Can Exit: \(canPlayerExitMaze)\n"
         
@@ -814,8 +878,9 @@ class GameCoordinator: ObservableObject {
         inputService.stopMonitoring()
         gameService.resetGame()
         
-        // Clear audio when stopping coordinator
-        clearMazeWorldGameAudio()
+        // Clear audio when stopping coordinator (RealityKit audio)
+        // Metode clearMazeWorldGameAudio() sudah dihapus, karena SoundPlayer yang menangani.
+        // soundPlayer.stopAllSounds() akan dipanggil via ECSWorld.shutdown()
         
         // Clear pathfinding visualization and cache
         pathfindingService.clearPathVisualization()
@@ -824,7 +889,7 @@ class GameCoordinator: ObservableObject {
         // Clear collectibles
         clearCollectibles()
         
-        // Shutdown ECS
+        // Shutdown ECS (Ini akan memicu ECSWorld.shutdown() yang juga menghentikan suara)
         ecsWorld.shutdown()
         
         systemStatus = .idle
