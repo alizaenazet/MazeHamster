@@ -190,6 +190,7 @@ struct VisualMaterials {
     )
 }
 
+
 /// Represents adaptive game configuration that adjusts to screen size
 struct GameConfiguration {
     let maze: MazeConfiguration

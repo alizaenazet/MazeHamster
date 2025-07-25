@@ -1,6 +1,7 @@
 import Foundation
 import RealityKit
 import simd
+import MazeHamsterAssets
 
 /// Concrete implementation of MazeService for handling maze generation and management
 class MazeService: BaseService, MazeServiceProtocol {
@@ -76,6 +77,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         
         // Create floor entity
         let floorEntity = createFloorEntity()
+        
         entities.append(floorEntity)
         
         // Create wall entities
@@ -104,7 +106,16 @@ class MazeService: BaseService, MazeServiceProtocol {
         
         // Create floor mesh and material
         let floorMesh = MeshResource.generateBox(size: floorSize)
-        let floorMaterial = visualMaterials.floor
+        var floorMaterial = visualMaterials.floor
+        
+        if let floorTexture = try? TextureResource.load(named: "Ground_Base"){ // TODO: try import directly form the Composer package assets
+            floorMaterial.color.texture = MaterialParameters.Texture(floorTexture)
+            print("success load and apply floor texture")
+        }
+        
+        
+       
+        
         
         floorEntity.components.set(ModelComponent(mesh: floorMesh, materials: [floorMaterial]))
         floorEntity.position = maze.centerPosition.offsetY(-0.05)
@@ -151,6 +162,7 @@ class MazeService: BaseService, MazeServiceProtocol {
             }
         }
         
+    
         return wallEntities
     }
     
@@ -160,7 +172,23 @@ class MazeService: BaseService, MazeServiceProtocol {
         
         // Create wall mesh and material
         let wallMesh = MeshResource.generateBox(size: size)
-        let wallMaterial = visualMaterials.wall
+        
+        //TODO: Temporary dont find solution, why the wall texture is not applied after edited
+//        var wallMaterial = visualMaterials.wall
+//        
+//        if let wallTexture = try? TextureResource.load(named: "Wall_Base"){ // TODO: try import directly form the Composer package assets
+//            wallMaterial.color.texture = MaterialParameters.Texture(wallTexture)
+//            print("success load and apply Wall texture")
+//        }
+
+
+        var wallMaterial = SimpleMaterial()
+        if let wallTexture = try? TextureResource.load(named: "Wall_Base"){ // TODO: try import directly form the Composer package assets
+            wallMaterial.color.texture = MaterialParameters.Texture(wallTexture)
+            print("success load and apply Wall texture")
+        }
+        
+        
         
         wallEntity.components.set(ModelComponent(mesh: wallMesh, materials: [wallMaterial]))
         wallEntity.position = position + SIMD3<Float>(0, size.y * 0.5, 0) // Raise wall to sit on floor
