@@ -28,7 +28,6 @@ class PhysicsSystem: GameSystem {
     func initialize() {
         // Initialize physics world settings
     }
-    
     func update(deltaTime: TimeInterval) {
         let physicsEntities = componentManager.getAllEntitiesWithComponent(PhysicsComponent.self)
         
