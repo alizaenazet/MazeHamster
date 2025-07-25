@@ -57,7 +57,7 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
     
     func setupWallPhysics(for entity: Entity, size: SIMD3<Float>) {
         // Create physics body component for static wall
-        let physicsBody = PhysicsBodyComponent(
+        let physicsBody = PhysicsBodyComponent( 
             shapes: [.generateBox(size: size)],
             mass: 0.0,
             material: physicsMaterials.wall,

@@ -25,60 +25,39 @@ class EntityFactory: EntityFactoryProtocol {
             // Remove any existing physics components from the loaded model
             ball.components.remove(PhysicsBodyComponent.self)
             ball.components.remove(CollisionComponent.self)
-            
+//            
             print("🐹 Hamster model loaded and existing physics cleared")
             
-            // Use physics radius close to visual size for stable collision (matches PhysicsService)
-            let hamsterPhysicsRadius = radius * 0.9  // Only 10% smaller for very stable physics
-            
-            var physicsBody = PhysicsBodyComponent(
-                shapes: [.generateSphere(radius: hamsterPhysicsRadius)],
-                mass: 1.5,  // Lighter mass for better responsiveness and natural stops
-                material: physicsMaterials.ball,
-                mode: .dynamic
-            )
-            
-            // Add very strong damping to ensure natural stops and prevent erratic behavior
-            physicsBody.linearDamping = 0.8   // Very high damping for immediate, natural stops
-            physicsBody.angularDamping = 0.9  // Very high angular damping to prevent spinning
-            
-            let collision = CollisionComponent(
-                shapes: [.generateSphere(radius: hamsterPhysicsRadius)]
-            )
-            
-            ball.components.set(physicsBody)
-            ball.components.set(collision)
-            
-            print("🎯 Natural Hamster physics - radius: \(hamsterPhysicsRadius), mass: 1.5, very high damping for natural collision behavior")
-            
+//
+//            
         } else {
             // Create ball mesh with sphere collision (fallback)
             let ballMesh = MeshResource.generateSphere(radius: radius)
             ball.components.set(ModelComponent(mesh: ballMesh, materials: [material]))
-            
-            let physicsRadius = radius /** 0.9*/  // Consistent with Hamster model
-            
-            print("Radius: \(physicsRadius) for fallback sphere")
-            print("Radius: \(radius) for fallback sphere")
-            var physicsBody = PhysicsBodyComponent(
-                shapes: [.generateSphere(radius: physicsRadius)],
-                mass: 1.5,
-                material: physicsMaterials.ball,
-                mode: .dynamic
-            )
-            
-            physicsBody.linearDamping = 0.8
-            physicsBody.angularDamping = 0.9
-            
-            let collision = CollisionComponent(
-                shapes: [.generateSphere(radius: physicsRadius)]
-            )
-            
-            ball.components.set(physicsBody)
-            ball.components.set(collision)
-            
-            print("🎯 Fallback sphere with natural physics: radius \(physicsRadius), mass: 1.5")
         }
+        
+        let physicsRadius = radius /** 0.9*/  // Consistent with Hamster model
+        
+        print("Radius: \(physicsRadius) for fallback sphere")
+        print("Radius: \(radius) for fallback sphere")
+        var physicsBody = PhysicsBodyComponent(
+            shapes: [.generateSphere(radius: physicsRadius)],
+            mass: 1.5,
+            material: physicsMaterials.ball,
+            mode: .dynamic
+        )
+        
+        physicsBody.linearDamping = 0.8
+        physicsBody.angularDamping = 0.9
+        
+        let collision = CollisionComponent(
+            shapes: [.generateSphere(radius: physicsRadius)]
+        )
+        
+        ball.components.set(physicsBody)
+        ball.components.set(collision)
+        
+        print("🎯 Fallback sphere with natural physics: radius \(physicsRadius), mass: 1.5")
         
         return ball
     }
