@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct MenuView: View {
-    @EnvironmentObject var gameViewModel: GameViewModel
     
+    @State private var isStartingGame = false
     var body: some View {
         VStack(spacing: 30) {
             Spacer()
@@ -42,12 +42,20 @@ struct MenuView: View {
             Spacer()
             
             // Start Button
-            Button("Start Game") {
-                HapticManager.impact(.medium)
-                gameViewModel.startGame()
+            
+            NavigationLink(destination: GameView()
+                .navigationBarHidden(true),
+                isActive: $isStartingGame) {
+                
+                Button("Start Game") {
+                    print("Game Started")
+                    HapticManager.impact(.medium)
+                    isStartingGame = true
+                }
+                .buttonStyle(GameButtonStyle(color: .green))
+                .scaleEffect(1.2)
             }
-            .buttonStyle(GameButtonStyle(color: .green))
-            .scaleEffect(1.2)
+            
             
             Spacer()
         }

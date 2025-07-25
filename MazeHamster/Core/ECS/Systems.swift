@@ -28,7 +28,6 @@ class PhysicsSystem: GameSystem {
     func initialize() {
         // Initialize physics world settings
     }
-    
     func update(deltaTime: TimeInterval) {
         let physicsEntities = componentManager.getAllEntitiesWithComponent(PhysicsComponent.self)
         
@@ -670,6 +669,12 @@ class ECSWorld: ObservableObject {
             self.mazeService = mazeService // NEW: Inisialisasi mazeService
             setupSystems()
         }
+    
+    func clearAllComponents() {
+//        componentManager.clearAll()
+        print("🧹 ECS World: All components cleared")
+    }
+
     
     private func setupSystems() {
         systems = [
