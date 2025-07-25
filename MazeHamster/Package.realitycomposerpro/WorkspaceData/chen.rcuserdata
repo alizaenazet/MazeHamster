@@ -1,0 +1,48 @@
+{
+  "advancedEditorSelectedIdentifier" : "ProjectBrowser",
+  "openSceneRelativePaths" : [
+    "Fish.usda",
+    "Hamster.usda",
+    "Pillow.usda",
+    "Sunflower_Seed.usda",
+    "Cat.usda"
+  ],
+  "recentIdentifiers" : {
+    "1F98E6E6-77ED-424F-A2AB-BF1D6B8036D1" : [
+
+    ],
+    "8931AD3C-F016-44B6-B065-5F0AD200BB2E" : [
+
+    ]
+  },
+  "sceneCameraHistory" : {
+    "84DB5249-852A-494E-B5A3-2E7063033643" : [
+      {
+        "date" : 775022575.40534,
+        "title" : "Untitled",
+        "transform" : [
+          0.7175624,
+          -2.9168108e-09,
+          -0.6964943,
+          0,
+          -0.5494077,
+          0.614626,
+          -0.5660266,
+          0,
+          0.4280835,
+          0.7888187,
+          0.44103247,
+          0,
+          1.1071324,
+          2.040085,
+          1.1406217,
+          1
+        ]
+      }
+    ]
+  },
+  "sceneViewportBackgroundColors" : {
+
+  },
+  "selectedSceneRelativePath" : "Cat.usda"
+}

@@ -1,6 +1,7 @@
 import Foundation
 import RealityKit
 import simd
+import MazeHamsterAssets
 
 /// Concrete implementation of EntityFactory for centralized entity creation
 class EntityFactory: EntityFactoryProtocol {
@@ -14,29 +15,50 @@ class EntityFactory: EntityFactoryProtocol {
     // MARK: - Protocol Methods
     
     func createBall(radius: Float, material: SimpleMaterial) -> Entity {
-        let ball = Entity()
+        var ball = Entity()
         ball.name = "MazeBall"
         
-        // Create ball mesh
-        let ballMesh = MeshResource.generateSphere(radius: radius)
-        ball.components.set(ModelComponent(mesh: ballMesh, materials: [material]))
+        if let ballEntity = try? Entity.load(named: "Hamster", in: mazeHamsterAssetsBundle) {
+            ball = ballEntity
+            ball.name = "MazeBall" // Ensure name is set
+            
+            // Remove any existing physics components from the loaded model
+            ball.components.remove(PhysicsBodyComponent.self)
+            ball.components.remove(CollisionComponent.self)
+//            
+            print("🐹 Hamster model loaded and existing physics cleared")
+            
+//
+//            
+        } else {
+            // Create ball mesh with sphere collision (fallback)
+            let ballMesh = MeshResource.generateSphere(radius: radius)
+            ball.components.set(ModelComponent(mesh: ballMesh, materials: [material]))
+        }
         
-        // Add physics components
-        let physicsBody = PhysicsBodyComponent(
-            shapes: [.generateSphere(radius: radius)],
-            mass: 1.0,
+        let physicsRadius = radius /** 0.9*/  // Consistent with Hamster model
+        
+        print("Radius: \(physicsRadius) for fallback sphere")
+        print("Radius: \(radius) for fallback sphere")
+        var physicsBody = PhysicsBodyComponent(
+            shapes: [.generateSphere(radius: physicsRadius)],
+            mass: 1.5,
             material: physicsMaterials.ball,
             mode: .dynamic
         )
         
+        physicsBody.linearDamping = 0.8
+        physicsBody.angularDamping = 0.9
+        
         let collision = CollisionComponent(
-            shapes: [.generateSphere(radius: radius)]
+            shapes: [.generateSphere(radius: physicsRadius)]
         )
         
         ball.components.set(physicsBody)
         ball.components.set(collision)
         
-        print("🎯 Ball entity created with radius: \(radius)")
+        print("🎯 Fallback sphere with natural physics: radius \(physicsRadius), mass: 1.5")
+        
         return ball
     }
     
@@ -147,14 +169,21 @@ class EntityFactory: EntityFactoryProtocol {
     
     /// Create a cat agent with green box appearance
     func createCatAgent() -> Entity {
-        let cat = Entity()
+        var cat = Entity()
         cat.name = "CatAgent"
-        
-        // Create box shape with green color
         let catSize = SIMD3<Float>(0.4, 0.4, 0.4)
-        let catMesh = MeshResource.generateBox(size: catSize)
-        let catMaterial = SimpleMaterial(color: .green, isMetallic: false)
-        cat.components.set(ModelComponent(mesh: catMesh, materials: [catMaterial]))
+        
+        if let catEntity = try? Entity.load(named: "Cat", in: mazeHamsterAssetsBundle) {
+            print("🐱 Cat agent loaded from model")
+            cat = catEntity
+        }else {
+            // Create box shape with green color
+            
+            let catMesh = MeshResource.generateBox(size: catSize)
+            let catMaterial = SimpleMaterial(color: .green, isMetallic: false)
+            cat.components.set(ModelComponent(mesh: catMesh, materials: [catMaterial]))
+        }
+        
         
         // Add physics components with proper collision setup
         var physicsBody = PhysicsBodyComponent(
@@ -240,6 +269,10 @@ class EntityFactory: EntityFactoryProtocol {
             isVisible: true
         )
         componentManager.addComponent(renderComponent, to: entityId)
+        
+        // NEW: Tambahkan CatStatusComponent ke entitas kucing di sini
+        let catStatusComponent = CatStatusComponent(entityId: entityId)
+        componentManager.addComponent(catStatusComponent, to: entityId)
         
         print("🐱 Cat entity with ECS components created at position: \(startPosition)")
         return (cat, entityId)
