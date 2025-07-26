@@ -100,11 +100,26 @@ class PhysicsService: BaseService, PhysicsServiceProtocol {
     func applyTiltToBall(_ ball: Entity, tiltData: TiltData) {
         // Apply gravitational force to ball based on tilt
         guard ball.components[PhysicsBodyComponent.self]?.mode == .dynamic else { return }
+            // Calculate tilt intensity (0.0 to 1.0)
+        let rollIntensity = abs(tiltData.roll) / (.pi / 4) // Normalize against max tilt (45 degrees)
+        let pitchIntensity = abs(tiltData.pitch) / (.pi / 4)
+        
+        // Combined tilt intensity
+        let combinedIntensity = sqrt(rollIntensity * rollIntensity + pitchIntensity * pitchIntensity)
+        let clampedIntensity = min(combinedIntensity, 1.0) // Ensure it doesn't exceed 1.0
+        
+        // Dynamic force multiplier based on tilt intensity
+        let baseForceMultiplier: Float = 2.0  // Minimum force for slight tilts
+        let maxForceMultiplier: Float = 4.3   // Maximum force for extreme tilts
+        
+        // Use quadratic scaling for more natural feel (slow start, fast acceleration)
+        let intensitySquared = clampedIntensity * clampedIntensity
+        let dynamicForceMultiplier = baseForceMultiplier + (maxForceMultiplier - baseForceMultiplier) * intensitySquared
         
         // Reduce force for gentler, more controllable movement
-        let forceMultiplier: Float = 2.5  // Reduced from 5.0 for smoother control
-        let forceX = sin(tiltData.roll) * forceMultiplier
-        let forceZ = -sin(tiltData.pitch) * forceMultiplier
+        let forceMultiplier: Float = 10.5  // Reduced from 5.0 for smoother control
+        let forceX = sin(tiltData.roll) * dynamicForceMultiplier
+        let forceZ = -sin(tiltData.pitch) * dynamicForceMultiplier
         let force = SIMD3<Float>(forceX, 0, forceZ)
         
         // Apply force by modifying ball position (simplified approach)
