@@ -58,11 +58,16 @@ class PathfindingService: BaseService {
             return []
         }
         
+        
+        /* TODO: Solve the Bug caused the Casting issue
+         The Possible cause of BUG :
+         Casting,The casting from SIMD3<Float> to SIMD2<Int> is indeed the primary cause of the jumping behavior.
+         */
+        print("🔍 Finding path from \(startWorld) to \(targetWorld)")
         // Convert world positions to maze coordinates
         let startCell = worldToGridPosition(startWorld)
         let targetCell = worldToGridPosition(targetWorld)
-        
-        // print("🗺️ Pathfinding from \(startCell) to \(targetCell)")
+         print("🗺️ Pathfinding from \(startCell) to \(targetCell)")
         
         // Validate positions are within maze bounds
         guard isValidGridPosition(startCell) && isValidGridPosition(targetCell) else {
@@ -76,6 +81,7 @@ class PathfindingService: BaseService {
             // print("📋 Using cached path with \(cachedPath.count) waypoints")
             return convertCellPathToWorldPath(cachedPath)
         }
+        
         
         // Find path using A*
         let cellPath = findPathAStar(from: startCell, to: targetCell)
@@ -172,8 +178,8 @@ class PathfindingService: BaseService {
     
     // MARK: - A* Pathfinding Implementation
     
-    private func findPathAStar(from start: SIMD2<Int>, to target: SIMD2<Int>) -> [SIMD2<Int>] {
-        guard let mazeService = mazeService else { 
+    private func findPathAStar(from start:  , to target: SIMD2<Int>) -> [SIMD2<Int>] {
+        guard let mazeService = mazeService else {
             // print("⚠️ PathfindingService: No maze service in findPathAStar")
             return [] 
         }

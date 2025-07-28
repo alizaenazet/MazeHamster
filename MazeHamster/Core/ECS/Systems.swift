@@ -442,9 +442,9 @@ class AISystem: GameSystem {
                 pathfindingComponent.isFollowingPath = true
                 
                 // Visualize the path
-//                if let scene = sceneEntity {
-//                    pathfindingService.visualizePath(newPath, in: scene)
-//                }
+                if let scene = sceneEntity {
+                    pathfindingService.visualizePath(newPath, in: scene)
+                }
                 
                 // print("🗺️ Cat \(entityId) found new path with \(newPath.count) waypoints")
                 // print("   Path preview: \(newPath.prefix(3).map { "(\(String(format: "%.1f", $0.x)),\(String(format: "%.1f", $0.z)))" })")
