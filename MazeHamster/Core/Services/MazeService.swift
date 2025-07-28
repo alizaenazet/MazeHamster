@@ -32,7 +32,7 @@ class MazeService: BaseService, MazeServiceProtocol {
 //        super.setupService()
 //        // Generate initial maze
 //        maze = generateMaze(width: configuration.width, height: configuration.height)
-//        print("✅ MazeService configured successfully")
+//        // print("✅ MazeService configured successfully")
 //    }
     
     func setupWithConfiguration(_ config: MazeConfiguration) {
@@ -52,7 +52,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         )
         
         let loopCount = max(1, (width * height) / 5)
-        print("LOOP COUNT IS: \(loopCount)")
+        // print("LOOP COUNT IS: \(loopCount)")
         
         // Use the existing MazeGenerator
         let generator = MazeGenerator(width: width, height: height, extra: loopCount)
@@ -67,7 +67,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         // Update published property
         maze = mazeData
         
-        print("🌀 Generated new maze: \(width)x\(height)")
+        // print("🌀 Generated new maze: \(width)x\(height)")
 //        generator.addExtraPaths(count: loopCount)
         return mazeData
     }
@@ -88,7 +88,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         let exitEntity = createExitEntity()
         entities.append(exitEntity)
         
-        print("🏗️ Created \(entities.count) maze entities")
+        // print("🏗️ Created \(entities.count) maze entities")
         return entities
     }
     
@@ -110,7 +110,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         
         if let floorTexture = try? TextureResource.load(named: "Ground_Base"){ // TODO: try import directly form the Composer package assets
             floorMaterial.color.texture = MaterialParameters.Texture(floorTexture)
-            print("success load and apply floor texture")
+            // print("success load and apply floor texture")
         }
         
         
@@ -178,14 +178,14 @@ class MazeService: BaseService, MazeServiceProtocol {
 //        
 //        if let wallTexture = try? TextureResource.load(named: "Wall_Base"){ // TODO: try import directly form the Composer package assets
 //            wallMaterial.color.texture = MaterialParameters.Texture(wallTexture)
-//            print("success load and apply Wall texture")
+//            // print("success load and apply Wall texture")
 //        }
 
 
         var wallMaterial = SimpleMaterial()
         if let wallTexture = try? TextureResource.load(named: "Wall_Base"){ // TODO: try import directly form the Composer package assets
             wallMaterial.color.texture = MaterialParameters.Texture(wallTexture)
-            print("success load and apply Wall texture")
+            // print("success load and apply Wall texture")
         }
         
         
@@ -229,7 +229,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         let result = SIMD2<Int>(clampedX, clampedY)
         
         if x != clampedX || y != clampedY {
-            print("🔧 MazeService: Clamped world position \(worldPosition) from cell (\(x),\(y)) to \(result)")
+            // print("🔧 MazeService: Clamped world position \(worldPosition) from cell (\(x),\(y)) to \(result)")
         }
         
         return result
@@ -240,14 +240,14 @@ class MazeService: BaseService, MazeServiceProtocol {
         // First check if coordinates are within bounds
         guard cellCoordinate.x >= 0 && cellCoordinate.x < maze.configuration.width &&
               cellCoordinate.y >= 0 && cellCoordinate.y < maze.configuration.height else {
-            print("🚫 MazeService: Cell coordinate \(cellCoordinate) out of bounds for maze \(maze.configuration.width)x\(maze.configuration.height)")
+            // print("🚫 MazeService: Cell coordinate \(cellCoordinate) out of bounds for maze \(maze.configuration.width)x\(maze.configuration.height)")
             return true // Out of bounds = wall
         }
         
         // Additional safety check for cells array
         guard cellCoordinate.x < maze.cells.count &&
               cellCoordinate.y < maze.cells[cellCoordinate.x].count else {
-            print("🚫 MazeService: Cell coordinate \(cellCoordinate) out of cells array bounds")
+            // print("🚫 MazeService: Cell coordinate \(cellCoordinate) out of cells array bounds")
             return true // Out of bounds = wall
         }
         
@@ -256,9 +256,9 @@ class MazeService: BaseService, MazeServiceProtocol {
         
         // Debug logging for wall checking
         if hasWallResult {
-            print("🧱 Wall found at \(cellCoordinate) direction \(direction)")
+            // print("🧱 Wall found at \(cellCoordinate) direction \(direction)")
         } else {
-            print("🚪 No wall at \(cellCoordinate) direction \(direction)")
+            // print("🚪 No wall at \(cellCoordinate) direction \(direction)")
         }
         
         return hasWallResult

@@ -171,7 +171,7 @@ class CollectibleSystem: GameSystem {
        }
     
     func initialize() {
-        print("✨ CollectibleSystem initialized")
+        // print("✨ CollectibleSystem initialized")
     }
     
     func update(deltaTime: TimeInterval) {
@@ -183,7 +183,7 @@ class CollectibleSystem: GameSystem {
     
     func shutdown() {
         realityEntities.removeAll()
-        print("✨ CollectibleSystem shut down")
+        // print("✨ CollectibleSystem shut down")
     }
     
     // MARK: - Animation Updates
@@ -292,7 +292,7 @@ class CollectibleSystem: GameSystem {
         collectible.isCollected = true
         componentManager.addComponent(collectible, to: collectibleId)
         
-        print("collecting coy", collectible.collectibleType)
+        // print("collecting coy", collectible.collectibleType)
         
         let now = Date()
         switch collectible.collectibleType {
@@ -300,12 +300,12 @@ class CollectibleSystem: GameSystem {
             playerStatus.totalCollectibles += 1
             gameService?.addPoints(collectible.collectibleType.points)
             soundPlayer.playSound(named: "sfx_kuaci_collect") // Memainkan SFX
-            print("✨ Collected \(collectible.collectibleType): +\(collectible.collectibleType.points) points")
+            // print("✨ Collected \(collectible.collectibleType): +\(collectible.collectibleType.points) points")
         case .shield:
             playerStatus.hasShield = true
             playerStatus.shieldEndTime = now.addingTimeInterval(collectible.collectibleType.effectDuration)
             soundPlayer.playSound(named: "sfx_shield_collect") // Memainkan SFX
-            print("🛡️ Shield collected! Player has shield for \(collectible.collectibleType.effectDuration) seconds!")
+            // print("🛡️ Shield collected! Player has shield for \(collectible.collectibleType.effectDuration) seconds!")
         case .fish:
             // Temukan entitas kucing dan terapkan efek kepadanya
             if let catId = (componentManager.getAllEntitiesWithComponent(GameEntityComponent.self)
@@ -318,9 +318,9 @@ class CollectibleSystem: GameSystem {
                 
                 componentManager.addComponent(catStatus, to: catId)
                 soundPlayer.playSound(named: "sfx_fish_collect") // Memainkan SFX
-                print("🐟 Fish collected! Cat is now faster for \(collectible.collectibleType.effectDuration) seconds!")
+                // print("🐟 Fish collected! Cat is now faster for \(collectible.collectibleType.effectDuration) seconds!")
             } else {
-                print("⚠️ Fish collected, but cat entity or CatStatusComponent not found for effect.")
+                // print("⚠️ Fish collected, but cat entity or CatStatusComponent not found for effect.")
             }
         case .pillow:
             if let catId = (componentManager.getAllEntitiesWithComponent(GameEntityComponent.self)
@@ -332,15 +332,15 @@ class CollectibleSystem: GameSystem {
                 
                 componentManager.addComponent(catStatus, to: catId)
                 soundPlayer.playSound(named: "sfx_pillow_collect") // Memainkan SFX
-                print("😴 Pillow collected! Cat is stunned for \(collectible.collectibleType.effectDuration) seconds!")
+                // print("😴 Pillow collected! Cat is stunned for \(collectible.collectibleType.effectDuration) seconds!")
             } else {
-                print("⚠️ Pillow collected, but cat entity or CatStatusComponent not found for effect.")
+                // print("⚠️ Pillow collected, but cat entity or CatStatusComponent not found for effect.")
             }
         case .bubbleGum:
             playerStatus.isSlowMotion = true
             playerStatus.slowMotionEndTime = now.addingTimeInterval(collectible.collectibleType.effectDuration)
             soundPlayer.playSound(named: "sfx_bubblegum_collect") // Memainkan SFX
-            print("🐌 Bubble Gum collected! Player is slowed for \(collectible.collectibleType.effectDuration) seconds!")
+            // print("🐌 Bubble Gum collected! Player is slowed for \(collectible.collectibleType.effectDuration) seconds!")
         }
         
         // Simpan kembali PlayerStatusComponent setelah dimodifikasi
@@ -354,7 +354,7 @@ class CollectibleSystem: GameSystem {
     
     private func playCollectionEffect(for type: CollectibleType, at position: SIMD3<Float>) {
         // Ini adalah placeholder untuk efek partikel atau visual lainnya
-        print("✨ Collection effect for \(type) at \(position)")
+        // print("✨ Collection effect for \(type) at \(position)")
     }
     
     // MARK: - Public Methods
@@ -575,7 +575,7 @@ extension EntityFactory {
             let collision = CollisionComponent(shapes: [.generateSphere(radius: collisionShapeSize)])
             collectible.components.set(collision)
             
-            print("✨ Created \(type) collectible at \(position)")
+            // print("✨ Created \(type) collectible at \(position)")
             return (collectible, entityId)
         }
     
@@ -617,7 +617,7 @@ extension EntityFactory {
             }
         }
         
-        print("✨ Created \(collectibles.count) collectibles in maze")
+        // print("✨ Created \(collectibles.count) collectibles in maze")
         return collectibles
     }
     

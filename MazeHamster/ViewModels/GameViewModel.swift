@@ -39,7 +39,7 @@ class GameViewModel: ObservableObject {
         
         setupBindings()
 
-        print("🎮 Adaptive GameViewModel with screen detection initialized")
+        // print("🎮 Adaptive GameViewModel with screen detection initialized")
     }
     
     // MARK: - Setup
@@ -95,7 +95,7 @@ class GameViewModel: ObservableObject {
     
     private func handleGameStateChange(_ state: GameState) {
         if state == .completed {
-            print("✅ Level completed. Preparing next level...")
+            // print("✅ Level completed. Preparing next level...")
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 self.generateNewMaze()
             }
@@ -118,8 +118,8 @@ class GameViewModel: ObservableObject {
             self.startGameWithCountdown()
         }  
         
-        print("🏗️ Adaptive scene initialized")
-        print("   Maze Size: \(currentMazeSize.x)x\(currentMazeSize.y)")
+        // print("🏗️ Adaptive scene initialized")
+        // print("   Maze Size: \(currentMazeSize.x)x\(currentMazeSize.y)")
         
         return scene
     }
@@ -136,8 +136,8 @@ class GameViewModel: ObservableObject {
         // Start countdown for cat spawn
         startCatSpawnCountdown()
         
-        print("🎮 Adaptive game started")
-        print("   Screen-optimized maze: \(currentMazeSize.x)x\(currentMazeSize.y)")
+        // print("🎮 Adaptive game started")
+        // print("   Screen-optimized maze: \(currentMazeSize.x)x\(currentMazeSize.y)")
     }
     
     /// Pause the game
@@ -146,7 +146,7 @@ class GameViewModel: ObservableObject {
         countdownTimer?.invalidate()
         countdownTimer = nil
         
-        print("⏸️ Adaptive game paused")
+        // print("⏸️ Adaptive game paused")
     }
     
     /// Resume the game
@@ -158,7 +158,7 @@ class GameViewModel: ObservableObject {
             startCatSpawnCountdown()
         }
         
-        print("▶️ Adaptive game resumed")
+        // print("▶️ Adaptive game resumed")
     }
     
     /// Reset the game with adaptive sizing
@@ -169,19 +169,19 @@ class GameViewModel: ObservableObject {
         countdownTimer?.invalidate()
         countdownTimer = nil
         catSpawnCountdown = 0
-        print("🔄 Adaptive game reset")
+        // print("🔄 Adaptive game reset")
     }
     
 //    /// Clear all audio in Mazeworld
 //    func clearAudio() {
 //        gameCoordinator.clearMazeWorldGameAudio()
-//        print("🔇 Audio clearing requested from GameViewModel")
+//        // print("🔇 Audio clearing requested from GameViewModel")
 //    }
     
     /// Generate a new maze with current screen-optimal size
     /// Generate a new maze with current screen-optimal size
     func generateNewMaze() {
-        print("🌀 Starting new maze generation...")
+        // print("🌀 Starting new maze generation...")
         
         // Set loading state
         isLoading = true
@@ -217,7 +217,7 @@ class GameViewModel: ObservableObject {
                 // Clear loading state
                 self.isLoading = false
                 
-                print("🌀 New adaptive maze generated and game started: \(self.currentMazeSize.x)x\(self.currentMazeSize.y)")
+                // print("🌀 New adaptive maze generated and game started: \(self.currentMazeSize.x)x\(self.currentMazeSize.y)")
                 
                 // Log the event for debugging
                 self.logAdaptiveGameEvent(.adaptiveMazeGenerated(size: self.currentMazeSize))
@@ -228,7 +228,7 @@ class GameViewModel: ObservableObject {
     /// Force refresh adaptive configuration (useful on orientation change)
     func refreshAdaptiveConfiguration() {
         gameCoordinator.refreshAdaptiveConfiguration()
-        print("🔄 Adaptive configuration refreshed for current screen")
+        // print("🔄 Adaptive configuration refreshed for current screen")
     }
     
     /// Update game (called from view's update loop)
@@ -241,7 +241,7 @@ class GameViewModel: ObservableObject {
     func viewDidAppear() {
         // Refresh adaptive configuration when view appears
         refreshAdaptiveConfiguration()
-        print("📱 Adaptive view appeared")
+        // print("📱 Adaptive view appeared")
     }
     
     /// Handle view disappearing
@@ -252,7 +252,7 @@ class GameViewModel: ObservableObject {
         gameCoordinator.stopCoordinator()
         countdownTimer?.invalidate()
         countdownTimer = nil
-        print("📱 Adaptive view disappeared - audio cleared")
+        // print("📱 Adaptive view disappeared - audio cleared")
     }
     
     // MARK: - Cat Spawn Countdown
@@ -269,12 +269,12 @@ class GameViewModel: ObservableObject {
             DispatchQueue.main.async {
                 if self.catSpawnCountdown > 0 {
                     self.catSpawnCountdown -= 1
-                    print("🐱 Cat spawning in: \(self.catSpawnCountdown)")
+                    // print("🐱 Cat spawning in: \(self.catSpawnCountdown)")
                 } else {
                     self.catSpawnCountdown = 0
                     timer.invalidate()
                     self.countdownTimer = nil
-                    print("🐱 Cat is now active!")
+                    // print("🐱 Cat is now active!")
                 }
             }
         }
@@ -333,7 +333,7 @@ class GameViewModel: ObservableObject {
         gameCoordinator.updateConfiguration(config)
         generateNewMaze()
         
-        print("🧪 Testing maze size: \(size)")
+        // print("🧪 Testing maze size: \(size)")
     }
     
     /// Get available maze size options based on current screen
@@ -371,7 +371,7 @@ class GameViewModel: ObservableObject {
     private func handleError(_ error: Error) {
         DispatchQueue.main.async { [weak self] in
             self?.errorMessage = error.localizedDescription
-            print("❌ Adaptive Error: \(error)")
+            // print("❌ Adaptive Error: \(error)")
         }
     }
     
@@ -389,7 +389,7 @@ class GameViewModel: ObservableObject {
         gameCoordinator.stopCoordinator()
         countdownTimer?.invalidate()
         cancellables.removeAll()
-        print("🧹 Adaptive GameViewModel deallocated with audio cleanup")
+        // print("🧹 Adaptive GameViewModel deallocated with audio cleanup")
     }
 }
 
@@ -549,8 +549,8 @@ extension GameViewModel {
     func logAdaptiveGameEvent(_ event: AdaptiveGameEvent) {
         let timestamp = Date()
         let metrics = getAdaptivePerformanceMetrics()
-        print("📊 Adaptive Game Event [\(timestamp)]: \(event)")
-        print("   Metrics: \(metrics)")
+        // print("📊 Adaptive Game Event [\(timestamp)]: \(event)")
+        // print("   Metrics: \(metrics)")
         
         // Here you could send to analytics service
         // Analytics.track(event: event, properties: metrics)
@@ -586,7 +586,7 @@ extension GameViewModel {
     /// Test different screen configurations (for debugging)
     func simulateDeviceType(_ deviceType: ScreenAdaptiveService.DeviceType) {
         // This would be used for testing different configurations
-        print("🧪 Simulating device type: \(deviceType)")
+        // print("🧪 Simulating device type: \(deviceType)")
         
         let testConfig: GameConfiguration
         switch deviceType {
