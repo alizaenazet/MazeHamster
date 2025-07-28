@@ -218,15 +218,15 @@ class MazeService: BaseService, MazeServiceProtocol {
     }
     
     /// Get cell coordinate for a world position
-    func getCellCoordinate(for worldPosition: SIMD3<Float>) -> SIMD2<Int> {
-        let x = Int(worldPosition.x / maze.configuration.cellSize)
-        let y = Int(worldPosition.z / maze.configuration.cellSize)
+    func getCellCoordinate(for worldPosition: SIMD3<Float>) -> SIMD2<Float> {
+        let x = worldPosition.x / maze.configuration.cellSize
+        let y = worldPosition.z / maze.configuration.cellSize
         
         // Clamp to valid bounds and add logging
-        let clampedX = max(0, min(maze.configuration.width - 1, x))
-        let clampedY = max(0, min(maze.configuration.height - 1, y))
+        let clampedX = max(0, min(Float(maze.configuration.width - 1), x))
+        let clampedY = max(0, min(Float(maze.configuration.height - 1), y))
         
-        let result = SIMD2<Int>(clampedX, clampedY)
+        let result = SIMD2<Float>(clampedX, clampedY)
         
         if x != clampedX || y != clampedY {
             // print("🔧 MazeService: Clamped world position \(worldPosition) from cell (\(x),\(y)) to \(result)")

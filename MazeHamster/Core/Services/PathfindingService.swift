@@ -147,9 +147,9 @@ class PathfindingService: BaseService {
     // MARK: - Navigation Grid Building
     
     private func buildNavigationGrid() {
-        guard let mazeService = mazeService else { 
+        guard let mazeService = mazeService else {
             // print("⚠️ PathfindingService: No maze service in buildNavigationGrid")
-            return 
+            return
         }
         
         let maze = mazeService.maze
@@ -178,10 +178,10 @@ class PathfindingService: BaseService {
     
     // MARK: - A* Pathfinding Implementation
     
-    private func findPathAStar(from start:  , to target: SIMD2<Int>) -> [SIMD2<Int>] {
+    private func findPathAStar(from start:  SIMD2<Int>, to target: SIMD2<Int>) -> [SIMD2<Int>] {
         guard let mazeService = mazeService else {
             // print("⚠️ PathfindingService: No maze service in findPathAStar")
-            return [] 
+            return []
         }
         
         // Validate start and target positions
@@ -277,18 +277,18 @@ class PathfindingService: BaseService {
     
     /// Get navigable neighbors (cells that can be reached without going through walls)
     private func getNavigableNeighbors(of cell: SIMD2<Int>) -> [SIMD2<Int>] {
-        guard let mazeService = mazeService else { 
+        guard let mazeService = mazeService else {
             // print("⚠️ PathfindingService: No maze service available in getNavigableNeighbors")
-            return [] 
+            return []
         }
         
         var neighbors: [SIMD2<Int>] = []
         let maze = mazeService.maze
         
         // Check bounds for current cell
-        guard isValidGridPosition(cell) else { 
+        guard isValidGridPosition(cell) else {
             // print("⚠️ PathfindingService: Invalid current cell position \(cell)")
-            return [] 
+            return []
         }
         
         let directions: [(SIMD2<Int>, Wall)] = [
@@ -302,9 +302,9 @@ class PathfindingService: BaseService {
             let neighborCell = cell + direction
             
             // Check if neighbor is within maze bounds FIRST
-            guard isValidGridPosition(neighborCell) else { 
+            guard isValidGridPosition(neighborCell) else {
                 // print("🚫 Neighbor \(neighborCell) is out of bounds for maze \(maze.configuration.width)x\(maze.configuration.height)")
-                continue 
+                continue
             }
             
             // Additional safety check for navigation grid bounds
@@ -328,9 +328,9 @@ class PathfindingService: BaseService {
     }
     
     private func isValidGridPosition(_ position: SIMD2<Int>) -> Bool {
-        guard let mazeService = mazeService else { 
+        guard let mazeService = mazeService else {
             // print("⚠️ PathfindingService: No maze service in isValidGridPosition")
-            return false 
+            return false
         }
         let maze = mazeService.maze
         let isValid = position.x >= 0 && position.x < maze.configuration.width &&
@@ -401,9 +401,24 @@ class PathfindingService: BaseService {
     
     // MARK: - Coordinate Conversion
     
+    /// Improved conversion from world position to grid position with stability for similar positions
     private func worldToGridPosition(_ worldPos: SIMD3<Float>) -> SIMD2<Int> {
         guard let mazeService = mazeService else { return SIMD2<Int>(0, 0) }
-        return mazeService.getCellCoordinate(for: worldPos)
+        
+        // Get the raw cell coordinate from the maze service
+        let cellCoord = mazeService.getCellCoordinate(for: worldPos)
+        
+        // Convert from SIMD2<Float> to SIMD2<Int> with proper rounding
+        // Using rounded conversion instead of truncation for more stable results
+        let gridX = Int(round(cellCoord.x))
+        let gridY = Int(round(cellCoord.y))
+        
+        // Ensure the result is within valid maze bounds
+        let maze = mazeService.maze
+        let clampedX = max(0, min(maze.configuration.width - 1, gridX))
+        let clampedY = max(0, min(maze.configuration.height - 1, gridY))
+        
+        return SIMD2<Int>(clampedX, clampedY)
     }
     
     /// Convert cell coordinate path to world coordinate path
