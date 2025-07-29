@@ -8,7 +8,8 @@
 import Foundation
 import RealityKit
 import simd
-import SwiftUI // Diperlukan untuk UIColor, atau ganti dengan import lain jika menggunakan warna kustom
+import SwiftUI
+import MazeHamsterAssets
 
 // MARK: - Collectible Types
 
@@ -200,11 +201,11 @@ class CollectibleSystem: GameSystem {
             collectible.pulseAnimation += Float(deltaTime) * 3.0
             let pulseScale = 1.0 + sin(collectible.pulseAnimation) * 0.2
             
-            // Update rotation
-            let rotationAmount = Float(deltaTime) * collectible.rotationSpeed
-            let currentRotation = realityEntity.transform.rotation
-            let additionalRotation = simd_quatf(angle: rotationAmount, axis: [0, 1, 0])
-            realityEntity.transform.rotation = currentRotation * additionalRotation
+//            // Update rotation
+//            let rotationAmount = Float(deltaTime) * collectible.rotationSpeed
+//            let currentRotation = realityEntity.transform.rotation
+//            let additionalRotation = simd_quatf(angle: rotationAmount, axis: [0, 1, 0])
+//            realityEntity.transform.rotation = currentRotation * additionalRotation
             
             // Apply pulse scaling
             realityEntity.transform.scale = SIMD3<Float>(pulseScale, pulseScale, pulseScale)
@@ -492,8 +493,7 @@ extension EntityFactory {
             case .coin:
                 // Mengganti MeshResource.generateSphere dengan memuat model 3D "Sunflower_SeedDemo1"
                 do {
-                    loadedModel = try Entity.load(named: "Sunflower_SeedDemo1") // PASTIKAN NAMA INI SAMA PERSIS DENGAN NAMA ASET DI XCODE ANDA
-                    // Sesuaikan skala model jika diperlukan agar ukurannya pas di game
+                    loadedModel = try Entity.load(named: "Sunflower_SeedDemo1", in: mazeHamsterAssetsBundle)
                     loadedModel.scale = SIMD3<Float>(0.4, 0.4, 0.4) // Contoh skala, sesuaikan
                     loadedModel.transform.rotation = simd_quatf(angle: .pi / 1, axis: [0.4, 0, 0])
                     collisionShapeSize = 0.2 // Ukuran collision yang lebih kecil untuk "kuaci"
@@ -501,20 +501,19 @@ extension EntityFactory {
                     fatalError("Failed to load Sunflower_SeedDemo1.usdz: \(error.localizedDescription)")
                 }
             case .shield:
-                // Untuk shield, jika belum ada model 3D, pertahankan geometri generik atau tambahkan model baru
-                // Jika ada model 3D shield, ganti baris ini:
-                let size: Float = 0.3
-                let geometry = MeshResource.generateSphere(radius: size * 0.6)
-                let material = SimpleMaterial(color: type.color, isMetallic: false)
-                loadedModel = Entity()
-                loadedModel.components.set(ModelComponent(mesh: geometry, materials: [material]))
-                collisionShapeSize = size * 0.6
-                // Jika Anda punya model 3D shield, akan jadi seperti case .coin di atas.
+                do {
+                    loadedModel = try Entity.load(named: "ShieldDemo", in: mazeHamsterAssetsBundle)
+                    loadedModel.scale = SIMD3<Float>(0.4, 0.4, 0.4) // Contoh skala, sesuaikan
+                    loadedModel.transform.rotation = simd_quatf(angle: .pi / 1, axis: [0.4, 0, 0])
+                    collisionShapeSize = 0.2 // Ukuran collision yang lebih kecil untuk "kuaci"
+                } catch {
+                    fatalError("Failed to load Sunflower_SeedDemo1.usdz: \(error.localizedDescription)")
+                }
 
             case .fish:
                 // Mengganti MeshResource.generateSphere dengan memuat model 3D "FishDemo"
                 do {
-                    loadedModel = try Entity.load(named: "FishDemo") // PASTIKAN NAMA INI SAMA PERSIS
+                    loadedModel = try Entity.load(named: "FishDemo", in: mazeHamsterAssetsBundle)
                     loadedModel.scale = SIMD3<Float>(0.2, 0.2, 0.2) // Contoh skala, sesuaikan
                     loadedModel.transform.rotation = simd_quatf(angle: .pi / 1, axis: [0.4, 0, 0])
                     collisionShapeSize = 0.2 // Sesuaikan ukuran collision untuk "ikan"
@@ -524,22 +523,21 @@ extension EntityFactory {
             case .pillow:
                 // Mengganti MeshResource.generateBox dengan memuat model 3D "PillowDemo"
                 do {
-                    loadedModel = try Entity.load(named: "PillowDemo") // PASTIKAN NAMA INI SAMA PERSIS
+                    loadedModel = try Entity.load(named: "PillowDemo", in: mazeHamsterAssetsBundle)
                     loadedModel.scale = SIMD3<Float>(0.15, 0.15, 0.15) // Contoh skala, sesuaikan
                     collisionShapeSize = 0.3 // Sesuaikan ukuran collision untuk "bantal"
                 } catch {
                     fatalError("Failed to load PillowDemo.usdz: \(error.localizedDescription)")
                 }
             case .bubbleGum:
-                // Untuk bubble gum, jika belum ada model 3D, pertahankan geometri generik atau tambahkan model baru
-                // Jika ada model 3D bubble gum, ganti baris ini:
-                let size: Float = 0.3
-                let geometry = MeshResource.generateSphere(radius: size * 0.4)
-                let material = SimpleMaterial(color: type.color, isMetallic: false)
-                loadedModel = Entity()
-                loadedModel.components.set(ModelComponent(mesh: geometry, materials: [material]))
-                collisionShapeSize = size * 0.4
-                // Jika Anda punya model 3D bubble gum, akan jadi seperti case .coin di atas.
+                do {
+                    loadedModel = try Entity.load(named: "GumDemo1", in: mazeHamsterAssetsBundle)
+                    loadedModel.scale = SIMD3<Float>(0.2, 0.2, 0.2) // Contoh skala, sesuaikan
+                    loadedModel.transform.rotation = simd_quatf(angle: .pi / 1, axis: [0.4, 0, 0])
+                    collisionShapeSize = 0.2 // Sesuaikan ukuran collision untuk "ikan"
+                } catch {
+                    fatalError("Failed to load FishDemo.usdz: \(error.localizedDescription)")
+                }
             }
             
             // NEW: Tambahkan loadedModel sebagai child dari collectible entity utama
