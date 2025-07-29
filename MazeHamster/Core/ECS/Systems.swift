@@ -442,9 +442,9 @@ class AISystem: GameSystem {
                 pathfindingComponent.isFollowingPath = true
                 
                 // Visualize the path
-                if let scene = sceneEntity {
-                    pathfindingService.visualizePath(newPath, in: scene)
-                }
+//                if let scene = sceneEntity {
+//                    pathfindingService.visualizePath(newPath, in: scene)
+//                }
                 
                 // print("🗺️ Cat \(entityId) found new path with \(newPath.count) waypoints")
                 // print("   Path preview: \(newPath.prefix(3).map { "(\(String(format: "%.1f", $0.x)),\(String(format: "%.1f", $0.z)))" })")
@@ -555,11 +555,52 @@ class AISystem: GameSystem {
         let newPosition = currentPosition + movement
         entity.position = newPosition
         
-        // print("🚶 Cat enhanced movement:")
-        // print("   From: (\(String(format: "%.2f", currentPosition.x)), \(String(format: "%.2f", currentPosition.z)))")
-        // print("   To: (\(String(format: "%.2f", newPosition.x)), \(String(format: "%.2f", newPosition.z)))")
-        // print("   Target: (\(String(format: "%.2f", targetPosition.x)), \(String(format: "%.2f", targetPosition.z)))")
-        // print("   Move distance: \(String(format: "%.3f", moveDistance))")
+        // Simplified rotation logic for four primary directions
+        // Define reference quaternions for the four cardinal directions
+        let rightRotation = simd_quatf(real: 1.0, imag: SIMD3<Float>(0.0, 0.0, 0.0))             // Looking toward +Z IT MUST BE Right
+        let leftRotation = simd_quatf(real: 0.0, imag: SIMD3<Float>(0.0, 1.0, 0.0))          // Looking toward -Z IT MUST BE LEFT
+        let downRotation = simd_quatf(real: 0.7071068, imag: SIMD3<Float>(0.0, -0.7071068, 0.0))  // Looking toward -X IT MUST BE DOWN
+        let upRotation = simd_quatf(real: 0.7071068, imag: SIMD3<Float>(0.0, 0.7071068, 0.0))  // Looking toward +X IT MUST BE UP
+        
+        // Determine primary movement direction based on normalized direction components
+        let absX = abs(normalizedDirection.x)
+        let absZ = abs(normalizedDirection.z)
+        
+        // Debug movement direction
+        // print("Movement direction - X: \(normalizedDirection.x), Z: \(normalizedDirection.z)")
+        var catDirectionRotation = upRotation // Default to up rotation
+        // Apply rotation based on dominant movement direction
+      //  print("normalizedDirection. X: \(normalizedDirection.x) Z: \(normalizedDirection.z)")
+        if absX > absZ {
+            // Primarily moving along X axis (left or right)
+            if normalizedDirection.x > 0 {
+                // Moving right (+X)
+                // print("Cat moving RIGHT")
+                
+                catDirectionRotation = rightRotation
+              //  print("🐱 rotate rightRotation ➡️")
+            } else {
+                // Moving left (-X)
+                // print("Cat moving LEFT")
+                catDirectionRotation = leftRotation
+//                print("🐱 rotate leftRotation ⬅️")
+            }
+        } else {
+            // Primarily moving along Z axis (up or down)
+            if normalizedDirection.z > 0 {
+                // Moving up/forward (+Z)
+                // print("Cat moving UP")
+                catDirectionRotation = downRotation
+              //  print("🐱 rotate upRotation ⬆️")
+            } else {
+                // Moving down/backward (-Z)
+                // print("Cat moving DOWN")
+                // IT MUST BE UP
+                catDirectionRotation = upRotation
+              //  print("🐱 rotate downRotation ⬇️")
+            }
+        }
+        entity.transform.rotation = catDirectionRotation
     }
     
     private func hasTargetMovedSignificantly(currentPath: [SIMD3<Float>], targetPosition: SIMD3<Float>) -> Bool {
