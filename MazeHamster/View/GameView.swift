@@ -41,7 +41,7 @@ struct GameView: View {
                 .onDisappear {
                     gameViewModel.viewWillDisappear()
                 }
-                gameOverlay
+//                gameOverlay
             }
         }
     }
