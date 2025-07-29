@@ -280,6 +280,37 @@ class AISystem: GameSystem {
         gameStartTime = Date()
         // print("🤖 Enhanced AI System with pathfinding initialized")
     }
+    private var orientationTestMode = true
+    private var testStartTime: Date?
+
+    private func findCorrectForwardDirection(entity: Entity) {
+        if testStartTime == nil {
+            testStartTime = Date()
+        }
+        
+        let elapsed = Date().timeIntervalSince(testStartTime!)
+        let testInterval: TimeInterval = 3.0 // Change direction every 3 seconds
+        let testIndex = Int(elapsed / testInterval) % 8
+        
+        // Test all possible forward directions for 3D model
+        let testDirections: [(String, simd_quatf)] = [
+            ("Forward +Z", simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -Z", simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward +X", simd_quatf(angle: .pi/2, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -X", simd_quatf(angle: -.pi/2, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward +Z+45°", simd_quatf(angle: .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -Z+45°", simd_quatf(angle: .pi + .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward +X+45°", simd_quatf(angle: .pi/2 + .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -X+45°", simd_quatf(angle: -.pi/2 + .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+        ]
+        
+        let (name, rotation) = testDirections[testIndex]
+        entity.transform.rotation = rotation
+        
+        print("🧪 Testing cat forward direction: \(name)")
+        print("    Look at the cat and note which direction it's facing")
+        print("    The NOSE/FACE should point in the direction of movement")
+    }
     
     func update(deltaTime: TimeInterval) {
         let aiEntities = componentManager.getAllEntitiesWithComponent(AIAgentComponent.self)
@@ -524,9 +555,10 @@ class AISystem: GameSystem {
         )
         
         // Update transform component
+        // === IMPORTANT: Update transform component with both position AND rotation ===
         transformComponent.position = realityEntity.position
+        transformComponent.rotation = realityEntity.transform.rotation // NEW: Update rotation too!
     }
-    
     private func moveTowardsWaypointEnhanced(
         entity: Entity,
         from currentPosition: SIMD3<Float>,
@@ -534,33 +566,46 @@ class AISystem: GameSystem {
         speed: Float,
         deltaTime: Float
     ) {
-        // Calculate direction to target
         let direction = targetPosition - currentPosition
         let distance = length(direction)
         
         guard distance > 0.01 else {
-            // print("🎯 Cat too close to waypoint, not moving")
             return
         }
-        
-        // Normalize direction
-        let normalizedDirection = direction / distance
-        
-        // Calculate movement with speed limiting
+
+        let normalizedDirection = normalize(direction)
         let maxMoveDistance = speed * deltaTime
-        let moveDistance = min(maxMoveDistance, distance) // Don't overshoot
+        let moveDistance = min(maxMoveDistance, distance)
         let movement = normalizedDirection * moveDistance
-        
-        // Apply movement
+
+        // Update position
         let newPosition = currentPosition + movement
         entity.position = newPosition
+
+        // === Rotasi Menghadap Gerakan ===
+        // Kita hanya peduli terhadap arah horizontal (x, z), bukan y
+        let forward = SIMD3<Float>(0, 0, 1)
+        let moveDirXZ = simd_normalize(SIMD3<Float>(normalizedDirection.x, 0, normalizedDirection.z))
         
-        // print("🚶 Cat enhanced movement:")
-        // print("   From: (\(String(format: "%.2f", currentPosition.x)), \(String(format: "%.2f", currentPosition.z)))")
-        // print("   To: (\(String(format: "%.2f", newPosition.x)), \(String(format: "%.2f", newPosition.z)))")
-        // print("   Target: (\(String(format: "%.2f", targetPosition.x)), \(String(format: "%.2f", targetPosition.z)))")
-        // print("   Move distance: \(String(format: "%.3f", moveDistance))")
+        func clamp<T: Comparable>(_ value: T, _ minValue: T, _ maxValue: T) -> T {
+            return max(min(value, maxValue), minValue)
+        }
+
+        if length(moveDirXZ) > 0.001 {
+            let dot = simd_dot(forward, moveDirXZ)
+            let angle = acos(clamp(dot, -1, 1))
+            
+            // Apply 45-degree offset
+            let offsetAngle = 0 * .pi / 180.0  // Convert 45 degrees to radians
+            let finalAngle = angle + Float(offsetAngle)
+            
+            let axis = simd_cross(forward, moveDirXZ)
+            let rotation = simd_quatf(angle: finalAngle, axis: normalize(axis))
+            entity.transform.rotation = rotation
+        }
+
     }
+
     
     private func hasTargetMovedSignificantly(currentPath: [SIMD3<Float>], targetPosition: SIMD3<Float>) -> Bool {
         guard !currentPath.isEmpty else { return true }

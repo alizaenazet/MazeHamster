@@ -117,6 +117,10 @@ struct AIAgentComponent: GameComponent {
     var sleepStartTime: Date?
     var isSleeping: Bool
     
+    // === NEW: Rotation properties ===
+    var rotationSpeed: Float = 6.0  // Radians per second
+    var currentRotation: simd_quatf = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+    
     init(entityId: UUID, maxSpeed: Float = 0.3, maxAcceleration: Float = 0.8, sleepDuration: TimeInterval = 3.0) {
         self.entityId = entityId
         self.maxSpeed = maxSpeed
@@ -134,21 +138,22 @@ struct AIAgentComponent: GameComponent {
         
         self.agent = agent
         self.behavior = GKBehavior()
+        
+        // Initialize rotation
+        self.currentRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
     }
     
-    /// Start the sleep period
+    // Existing methods...
     mutating func startSleep() {
         isSleeping = true
         sleepStartTime = Date()
     }
     
-    /// Check if the sleep period has ended
     func isSleepFinished() -> Bool {
         guard let startTime = sleepStartTime else { return false }
         return Date().timeIntervalSince(startTime) >= sleepDuration
     }
     
-    /// Wake up from sleep
     mutating func wakeUp() {
         isSleeping = false
         sleepStartTime = nil

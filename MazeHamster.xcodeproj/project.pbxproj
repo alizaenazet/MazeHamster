@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05CA64072E3888EA007B8F0E /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 05CA64062E3888EA007B8F0E /* MazeHamsterAssets */; };
 		471415722E333F880062F1EE /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 471415712E333F880062F1EE /* MazeHamsterAssets */; };
 		53B2CDD42E3150870038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDD32E3150870038FC36 /* MazeHamsterAssets */; };
 		53B2CDE02E3154A10038FC36 /* MazeHamsterAssets in Frameworks */ = {isa = PBXBuildFile; productRef = 53B2CDDF2E3154A10038FC36 /* MazeHamsterAssets */; };
@@ -32,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05CA64072E3888EA007B8F0E /* MazeHamsterAssets in Frameworks */,
 				471415722E333F880062F1EE /* MazeHamsterAssets in Frameworks */,
 				53B2CDD42E3150870038FC36 /* MazeHamsterAssets in Frameworks */,
 				53B2CDE62E3155C00038FC36 /* MazeHamsterAssets in Frameworks */,
@@ -86,6 +88,7 @@
 				53B2CDE52E3155C00038FC36 /* MazeHamsterAssets */,
 				471415712E333F880062F1EE /* MazeHamsterAssets */,
 				53DB0C7B2E33C86700C19F69 /* MazeHamsterAssets */,
+				05CA64062E3888EA007B8F0E /* MazeHamsterAssets */,
 			);
 			productName = MazeHamster;
 			productReference = 53A73FC72E2598D000FAD660 /* MazeHamster.app */;
@@ -116,7 +119,7 @@
 			mainGroup = 53A73FBE2E2598D000FAD660;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				53DB0C7A2E33C86700C19F69 /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */,
+				05CA64052E3888EA007B8F0E /* XCLocalSwiftPackageReference "../MazeHamsterAssets" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53A73FC82E2598D000FAD660 /* Products */;
@@ -272,7 +275,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MazeHamster/Preview Content\"";
-				DEVELOPMENT_TEAM = QXK7R2TY4W;
+				DEVELOPMENT_TEAM = 962K8CY5A5;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -312,7 +315,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MazeHamster/Preview Content\"";
-				DEVELOPMENT_TEAM = QXK7R2TY4W;
+				DEVELOPMENT_TEAM = 962K8CY5A5;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -367,13 +370,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		53DB0C7A2E33C86700C19F69 /* XCLocalSwiftPackageReference "../../../temporary/MazeHamsterAssets" */ = {
+		05CA64052E3888EA007B8F0E /* XCLocalSwiftPackageReference "../MazeHamsterAssets" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../temporary/MazeHamsterAssets;
+			relativePath = ../MazeHamsterAssets;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		05CA64062E3888EA007B8F0E /* MazeHamsterAssets */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MazeHamsterAssets;
+		};
 		471415712E333F880062F1EE /* MazeHamsterAssets */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MazeHamsterAssets;
