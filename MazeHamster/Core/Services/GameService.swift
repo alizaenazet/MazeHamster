@@ -21,14 +21,14 @@ class GameService: BaseService, GameServiceProtocol {
     
     override func setupService() {
         super.setupService()
-        print("✅ GameService configured successfully")
+        // print("✅ GameService configured successfully")
     }
     
     // MARK: - Protocol Methods
     
     func startGame() {
         guard gameState == .menu || gameState == .failed else {
-            print("⚠️ Cannot start game: Current state is \(gameState)")
+            // print("⚠️ Cannot start game: Current state is \(gameState)")
             return
         }
         
@@ -41,12 +41,12 @@ class GameService: BaseService, GameServiceProtocol {
             self?.updateGameState()
         }
         
-        print("🎮 Game started")
+        // print("🎮 Game started")
     }
     
     func pauseGame() {
         guard gameState == .playing else {
-            print("⚠️ Cannot pause game: Current state is \(gameState)")
+            // print("⚠️ Cannot pause game: Current state is \(gameState)")
             return
         }
         
@@ -54,7 +54,7 @@ class GameService: BaseService, GameServiceProtocol {
         gameTimer?.invalidate()
         gameTimer = nil
         
-        print("⏸️ Game paused")
+        // print("⏸️ Game paused")
     }
     
     func resetGame() {
@@ -64,7 +64,7 @@ class GameService: BaseService, GameServiceProtocol {
         gameTimer?.invalidate()
         gameTimer = nil
         
-        print("🔄 Game reset")
+        // print("🔄 Game reset")
     }
     
     func updateGameState() {
@@ -123,7 +123,7 @@ class GameService: BaseService, GameServiceProtocol {
         // Calculate final score
         updateScore()
         
-        print("🎉 Game completed! Final score: \(score)")
+        // print("🎉 Game completed! Final score: \(score)")
         // Remove automatic reset - let UI handle transitions
     }
     
@@ -132,7 +132,7 @@ class GameService: BaseService, GameServiceProtocol {
         gameTimer?.invalidate()
         gameTimer = nil
         
-        print("💥 Game failed!")
+        // print("💥 Game failed!")
         // Remove automatic reset - let UI handle transitions
     }
     
@@ -141,19 +141,19 @@ class GameService: BaseService, GameServiceProtocol {
     /// Set the ball entity to track for win/fail conditions
     func setBallEntity(_ entity: Entity) {
         ballEntity = entity
-        print("🎯 Ball entity set for tracking")
+        // print("🎯 Ball entity set for tracking")
     }
     
     /// Set the maze service for win condition checking
     func setMazeService(_ service: MazeService) {
         mazeService = service
-        print("🏗️ Maze service set for game logic")
+        // print("🏗️ Maze service set for game logic")
     }
     
     /// Resume game from paused state
     func resumeGame() {
         guard gameState == .paused else {
-            print("⚠️ Cannot resume game: Current state is \(gameState)")
+            // print("⚠️ Cannot resume game: Current state is \(gameState)")
             return
         }
         
@@ -164,7 +164,7 @@ class GameService: BaseService, GameServiceProtocol {
             self?.updateGameState()
         }
         
-        print("▶️ Game resumed")
+        // print("▶️ Game resumed")
     }
     
     /// Get game statistics
@@ -180,13 +180,13 @@ class GameService: BaseService, GameServiceProtocol {
     /// Add points to the current score
     func addPoints(_ points: Int) {
         score += points
-        print("🏆 Added \(points) points. Total score: \(score)")
+        // print("🏆 Added \(points) points. Total score: \(score)")
     }
     
     /// Subtract points from the current score
     func subtractPoints(_ points: Int) {
         score = max(0, score - points)
-        print("⚠️ Subtracted \(points) points. Total score: \(score)")
+        // print("⚠️ Subtracted \(points) points. Total score: \(score)")
     }
     
     /// Set game state directly
@@ -197,7 +197,7 @@ class GameService: BaseService, GameServiceProtocol {
         // Handle state transitions
         handleStateTransition(from: previousState, to: newState)
         
-        print("🎮 Game state changed to: \(newState)")
+        // print("🎮 Game state changed to: \(newState)")
     }
     
     // MARK: - State Transition Handling

@@ -97,7 +97,7 @@ class GameCoordinator: ObservableObject {
         systemStatus = .ready
         isInitialized = true
         
-        print("🎮 Enhanced GameCoordinator with collectibles initialized successfully")
+        // print("🎮 Enhanced GameCoordinator with collectibles initialized successfully")
     }
     
     private func setupBindings() {
@@ -153,10 +153,10 @@ class GameCoordinator: ObservableObject {
         // Update adaptive info for debugging
         updateAdaptiveInfo()
         
-        print("📱 Updated adaptive configuration:")
-        print("   Maze Size: \(adaptiveConfig.maze.width)x\(adaptiveConfig.maze.height)")
-        print("   Cell Size: \(adaptiveConfig.maze.cellSize)")
-        print("   Camera Height: \(adaptiveConfig.cameraHeight)")
+        // print("📱 Updated adaptive configuration:")
+        // print("   Maze Size: \(adaptiveConfig.maze.width)x\(adaptiveConfig.maze.height)")
+        // print("   Cell Size: \(adaptiveConfig.maze.cellSize)")
+        // print("   Camera Height: \(adaptiveConfig.cameraHeight)")
     }
     
     private func updateAdaptiveInfo() {
@@ -172,7 +172,7 @@ class GameCoordinator: ObservableObject {
         
         // If game is running, might want to recreate scene with new configuration
         // For now, just log the change
-        print("📱 Screen changed - adaptive configuration updated")
+        // print("📱 Screen changed - adaptive configuration updated")
     }
     
     // Metode ini dihapus karena audio kini dikelola oleh SoundPlayer dan ECSWorld.
@@ -180,12 +180,12 @@ class GameCoordinator: ObservableObject {
     /*
     func clearMazeWorldGameAudio() {
         guard let mazeWorld = mazeWorldEntity else {
-            print("⚠️ No mazeWorld entity reference found")
+            // print("⚠️ No mazeWorld entity reference found")
             return
         }
         mazeWorld.stopAllAudio()
         mazeWorld.components.remove(ChannelAudioComponent.self)
-        print("🔇 Successfully cleared all game audio from MazeWorld")
+        // print("🔇 Successfully cleared all game audio from MazeWorld")
     }
     */
     
@@ -275,10 +275,10 @@ class GameCoordinator: ObservableObject {
         scene.addChild(camera)
         
         systemStatus = .ready
-        print("🏗️ Enhanced game scene with collectibles created successfully")
-        print("   Maze: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
-        print("   Collectibles: \(collectibleEntities.count)")
-        print("   Required Keys: \(requiredKeysForExit)") // Ini sekarang akan selalu 0
+        // print("🏗️ Enhanced game scene with collectibles created successfully")
+        // print("   Maze: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
+        // print("   Collectibles: \(collectibleEntities.count)")
+        // print("   Required Keys: \(requiredKeysForExit)") // Ini sekarang akan selalu 0
         
         return scene
     }
@@ -340,8 +340,8 @@ class GameCoordinator: ObservableObject {
         
         systemStatus = .ready
         
-        print("🌀 New adaptive maze with visual recreation generated: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
-        print("   Collectibles recreated: \(collectibleEntities.count)")
+        // print("🌀 New adaptive maze with visual recreation generated: \(gameConfiguration.maze.width)x\(gameConfiguration.maze.height)")
+        // print("   Collectibles recreated: \(collectibleEntities.count)")
     }
 
     // MARK: - Helper method to recreate visual maze
@@ -349,7 +349,7 @@ class GameCoordinator: ObservableObject {
     /// Recreate all visual maze entities (walls, floors) for the new maze layout
     private func recreateVisualMaze() {
         guard let mazeWorld = currentScene?.children.first(where: { $0.name == "MazeWorld" }) else {
-            print("⚠️ Could not find MazeWorld to recreate maze")
+            // print("⚠️ Could not find MazeWorld to recreate maze")
             return
         }
         
@@ -362,7 +362,7 @@ class GameCoordinator: ObservableObject {
             entity.removeFromParent()
         }
         
-        print("🗑️ Removed \(entitiesToRemove.count) old maze entities")
+        // print("🗑️ Removed \(entitiesToRemove.count) old maze entities")
         
         // Create new maze entities with the new layout
         let newMazeEntities = mazeService.createMazeEntities()
@@ -375,7 +375,7 @@ class GameCoordinator: ObservableObject {
             mazeWorld.addChild(entity)
         }
         
-        print("✨ Created \(newMazeEntities.count) new maze entities")
+        // print("✨ Created \(newMazeEntities.count) new maze entities")
     }
 
     /// Reset entity positions after maze recreation
@@ -433,7 +433,7 @@ class GameCoordinator: ObservableObject {
             }
         }
         
-        print("🔄 Reset entity positions for new maze layout")
+        // print("🔄 Reset entity positions for new maze layout")
     }
 
     // MARK: - Helper method to recreate collectibles
@@ -441,7 +441,7 @@ class GameCoordinator: ObservableObject {
     /// Recreate collectibles when generating a new maze
     private func recreateCollectiblesForNewMaze() {
         guard let mazeWorld = currentScene?.children.first(where: { $0.name == "MazeWorld" }) else {
-            print("⚠️ Could not find MazeWorld to add collectibles")
+            // print("⚠️ Could not find MazeWorld to add collectibles")
             return
         }
         
@@ -461,7 +461,7 @@ class GameCoordinator: ObservableObject {
             collectibleSystem.setRequiredKeys(requiredKeysForExit)
         }
         
-        print("✨ Recreated \(collectibleEntities.count) collectibles for new maze")
+        // print("✨ Recreated \(collectibleEntities.count) collectibles for new maze")
     }
 
     
@@ -469,7 +469,7 @@ class GameCoordinator: ObservableObject {
     func refreshAdaptiveConfiguration() {
         screenAdaptiveService.refreshScreenDetection()
         updateAdaptiveConfiguration()
-        print("🔄 Adaptive configuration refreshed")
+        // print("🔄 Adaptive configuration refreshed")
     }
     
     // MARK: - Collectible System Methods
@@ -577,7 +577,7 @@ class GameCoordinator: ObservableObject {
         let playerStatusComponent = PlayerStatusComponent(entityId: ballEntityId!)
         ecsWorld.componentManager.addComponent(playerStatusComponent, to: ballEntityId!)
         
-        print("🎯 Adaptive ball with collectible support created with radius: \(gameConfiguration.ballRadius)")
+        // print("🎯 Adaptive ball with collectible support created with radius: \(gameConfiguration.ballRadius)")
         return ball
     }
     
@@ -614,7 +614,7 @@ class GameCoordinator: ObservableObject {
             physicsSystem.registerEntity(cat, with: catId)
         }
         
-        print("🐱 Adaptive cat created at offset: \(offsetDistance)")
+        // print("🐱 Adaptive cat created at offset: \(offsetDistance)")
         return cat
     }
     
@@ -634,7 +634,7 @@ class GameCoordinator: ObservableObject {
         camera.position = centeredPosition
         camera.look(at: mazeCenter, from: centeredPosition, relativeTo: nil)
         
-        print("📷 Adaptive camera created at position: \(centeredPosition)")
+        // print("📷 Adaptive camera created at position: \(centeredPosition)")
         return camera
     }
     
@@ -679,10 +679,10 @@ class GameCoordinator: ObservableObject {
         
         if nearExit && canPlayerExitNow && gameService.gameState == .playing {
             gameService.setGameState(.completed)
-            print("🎉 Game completed! Player reached exit.")
+            // print("🎉 Game completed! Player reached exit.")
         } else if nearExit && !canPlayerExitNow {
             // Logika ini mungkin tidak lagi dibutuhkan jika canPlayerExitNow selalu true
-            print("🔒 Player at exit but cannot exit yet (logic removed - check if you need other conditions)")
+            // print("🔒 Player at exit but cannot exit yet (logic removed - check if you need other conditions)")
         }
     }
     
@@ -710,7 +710,7 @@ class GameCoordinator: ObservableObject {
         // Clear path visualization
         pathfindingService.clearPathVisualization()
         
-        print("🔄 Enhanced game reset with collectibles and timing restart")
+        // print("🔄 Enhanced game reset with collectibles and timing restart")
     }
     
     private func resetAdaptiveEntityPositions(in scene: Entity) {
@@ -735,7 +735,7 @@ class GameCoordinator: ObservableObject {
                             playerStatus.slowMotionEndTime = nil
                             
                             ecsWorld.componentManager.addComponent(playerStatus, to: ballEntityId)
-                            print("🔄 PlayerStatusComponent reset for ballEntityId: \(ballEntityId)")
+                            // print("🔄 PlayerStatusComponent reset for ballEntityId: \(ballEntityId)")
                         }
                         
                     } else if grandChild.name == "CatAgent" {
@@ -766,7 +766,7 @@ class GameCoordinator: ObservableObject {
                             if let catStatus = ecsWorld.componentManager.getComponent(CatStatusComponent.self, for: catEntityId) {
                                 var resetCatStatus = CatStatusComponent(entityId: catEntityId) // Buat instance baru untuk reset total
                                 ecsWorld.componentManager.addComponent(resetCatStatus, to: catEntityId)
-                                print("🔄 CatStatusComponent reset for catEntityId: \(catEntityId)")
+                                // print("🔄 CatStatusComponent reset for catEntityId: \(catEntityId)")
                             }
                         }
                         
@@ -828,7 +828,7 @@ class GameCoordinator: ObservableObject {
                 pitch: tiltData.pitch * 1.5,
                 timestamp: tiltData.timestamp
             )
-            print("🚀 Player Speed Boost active!")
+            // print("🚀 Player Speed Boost active!")
         } else if let currentStatus = playerStatus, currentStatus.isSlowMotion {
             // Decrease tilt sensitivity for slow motion
             modifiedTiltData = TiltData(
@@ -836,7 +836,7 @@ class GameCoordinator: ObservableObject {
                 pitch: tiltData.pitch * 0.5,
                 timestamp: tiltData.timestamp
             )
-            print("🐌 Player Slow Motion active!")
+            // print("🐌 Player Slow Motion active!")
         }
         
         physicsService.applyTiltToBall(ballEntity, tiltData: modifiedTiltData)
@@ -850,22 +850,22 @@ class GameCoordinator: ObservableObject {
         // Clear collectibles
         clearCollectibles()
         
-        print("🔄 Maze changed - pathfinding cache, visualization, and collectibles cleared")
+        // print("🔄 Maze changed - pathfinding cache, visualization, and collectibles cleared")
     }
     
     private func handleGameCompleted() {
         pathfindingService.clearPathVisualization()
         
         let finalProgress = getCollectionProgress()
-        print("🎉 Game completed! Final Collection: \(finalProgress.collectedItems)/\(finalProgress.totalItems)")
+        // print("🎉 Game completed! Final Collection: \(finalProgress.collectedItems)/\(finalProgress.totalItems)")
         // Kunci tidak lagi relevan
-        // print("   Keys Found: \(finalProgress.keys)/\(finalProgress.requiredKeys)")
-        print("   Completion: \(Int(finalProgress.completionPercentage * 100))%")
+        // // print("   Keys Found: \(finalProgress.keys)/\(finalProgress.requiredKeys)")
+        // print("   Completion: \(Int(finalProgress.completionPercentage * 100))%")
     }
     
     private func handleGameFailed() {
         pathfindingService.clearPathVisualization()
-        print("💥 Game failed - coordinator handling")
+        // print("💥 Game failed - coordinator handling")
     }
     
     // MARK: - Physics and Collision Setup
@@ -909,14 +909,14 @@ class GameCoordinator: ObservableObject {
         
         // Check if player has shield protection
         if let playerStatus = getPlayerStatus(), playerStatus.hasShield {
-            print("🛡️ Player protected by shield - cat collision ignored")
+            // print("🛡️ Player protected by shield - cat collision ignored")
             return
         }
         
         if aiSystem.checkCatPlayerCollision(catEntityId: catEntityId, playerEntityId: ballEntityId) {
             // Cat caught the player - game over
             gameService.setGameState(.failed)
-            print("🐱 Cat caught the unprotected player! Game Over!")
+            // print("🐱 Cat caught the unprotected player! Game Over!")
         }
     }
     
@@ -949,7 +949,7 @@ class GameCoordinator: ObservableObject {
     func updateConfiguration(_ newConfiguration: GameConfiguration) {
         gameConfiguration = newConfiguration
         currentMazeSize = SIMD2<Int>(newConfiguration.maze.width, newConfiguration.maze.height)
-        print("⚙️ Game configuration updated to: \(newConfiguration.maze.width)x\(newConfiguration.maze.height)")
+        // print("⚙️ Game configuration updated to: \(newConfiguration.maze.width)x\(newConfiguration.maze.height)")
     }
     
     func getConfiguration() -> GameConfiguration {
@@ -1007,7 +1007,7 @@ class GameCoordinator: ObservableObject {
     
     func startCoordinator() {
         guard isInitialized else {
-            print("⚠️ Cannot start coordinator: Not initialized")
+            // print("⚠️ Cannot start coordinator: Not initialized")
             return
         }
         
@@ -1047,7 +1047,7 @@ class GameCoordinator: ObservableObject {
         ecsWorld.shutdown()
         
         systemStatus = .idle
-        print("🛑 Enhanced GameCoordinator with collectibles stopped")
+        // print("🛑 Enhanced GameCoordinator with collectibles stopped")
     }
     
     // MARK: - Cleanup
@@ -1055,6 +1055,6 @@ class GameCoordinator: ObservableObject {
     deinit {
         stopCoordinator()
         cancellables.removeAll()
-        print("🧹 Enhanced GameCoordinator with collectibles deallocated")
+        // print("🧹 Enhanced GameCoordinator with collectibles deallocated")
     }
 }

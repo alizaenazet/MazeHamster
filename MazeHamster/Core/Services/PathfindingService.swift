@@ -39,7 +39,7 @@ class PathfindingService: BaseService {
     
     override func setupService() {
         super.setupService()
-        print("✅ Enhanced PathfindingService configured successfully")
+        // print("✅ Enhanced PathfindingService configured successfully")
     }
     
     // MARK: - Public Methods
@@ -54,28 +54,34 @@ class PathfindingService: BaseService {
     /// Find path from start position to target position using A* algorithm
     func findPath(from startWorld: SIMD3<Float>, to targetWorld: SIMD3<Float>) -> [SIMD3<Float>] {
         guard let mazeService = mazeService else {
-            print("⚠️ PathfindingService: No maze service available")
+            // print("⚠️ PathfindingService: No maze service available")
             return []
         }
         
+        
+        /* TODO: Solve the Bug caused the Casting issue
+         The Possible cause of BUG :
+         Casting,The casting from SIMD3<Float> to SIMD2<Int> is indeed the primary cause of the jumping behavior.
+         */
+        print("🔍 Finding path from \(startWorld) to \(targetWorld)")
         // Convert world positions to maze coordinates
         let startCell = worldToGridPosition(startWorld)
         let targetCell = worldToGridPosition(targetWorld)
-        
-        print("🗺️ Pathfinding from \(startCell) to \(targetCell)")
+         print("🗺️ Pathfinding from \(startCell) to \(targetCell)")
         
         // Validate positions are within maze bounds
         guard isValidGridPosition(startCell) && isValidGridPosition(targetCell) else {
-            print("⚠️ Invalid grid positions: start=\(startCell), target=\(targetCell)")
+            // print("⚠️ Invalid grid positions: start=\(startCell), target=\(targetCell)")
             return []
         }
         
         // Check cache first
         let cacheKey = "\(startCell.x),\(startCell.y)-\(targetCell.x),\(targetCell.y)"
         if let cachedPath = pathCache[cacheKey] {
-            print("📋 Using cached path with \(cachedPath.count) waypoints")
+            // print("📋 Using cached path with \(cachedPath.count) waypoints")
             return convertCellPathToWorldPath(cachedPath)
         }
+        
         
         // Find path using A*
         let cellPath = findPathAStar(from: startCell, to: targetCell)
@@ -83,13 +89,13 @@ class PathfindingService: BaseService {
         // Cache the result
         if !cellPath.isEmpty {
             pathCache[cacheKey] = cellPath
-            print("💾 Cached new path with \(cellPath.count) waypoints")
+            // print("💾 Cached new path with \(cellPath.count) waypoints")
         }
         
         // Convert to world coordinates
         let worldPath = convertCellPathToWorldPath(cellPath)
         
-        print("🎯 Found path: \(cellPath.count) cells -> \(worldPath.count) world points")
+        // print("🎯 Found path: \(cellPath.count) cells -> \(worldPath.count) world points")
         return worldPath
     }
     
@@ -121,7 +127,7 @@ class PathfindingService: BaseService {
             pathVisualizationEntities.append(finalWaypoint)
         }
         
-        print("👁️ Path visualization created with \(pathVisualizationEntities.count) entities")
+        // print("👁️ Path visualization created with \(pathVisualizationEntities.count) entities")
     }
     
     /// Clear path visualization
@@ -135,15 +141,15 @@ class PathfindingService: BaseService {
     /// Clear the path cache (call when maze changes)
     func clearPathCache() {
         pathCache.removeAll()
-        print("🗑️ PathfindingService: Path cache cleared")
+        // print("🗑️ PathfindingService: Path cache cleared")
     }
     
     // MARK: - Navigation Grid Building
     
     private func buildNavigationGrid() {
-        guard let mazeService = mazeService else { 
-            print("⚠️ PathfindingService: No maze service in buildNavigationGrid")
-            return 
+        guard let mazeService = mazeService else {
+            // print("⚠️ PathfindingService: No maze service in buildNavigationGrid")
+            return
         }
         
         let maze = mazeService.maze
@@ -152,7 +158,7 @@ class PathfindingService: BaseService {
         
         // Ensure we don't have empty dimensions
         guard width > 0 && height > 0 else {
-            print("⚠️ PathfindingService: Invalid maze dimensions \(width)x\(height)")
+            // print("⚠️ PathfindingService: Invalid maze dimensions \(width)x\(height)")
             return
         }
         
@@ -166,30 +172,30 @@ class PathfindingService: BaseService {
             }
         }
         
-        print("🗺️ Navigation grid built successfully: \(width)x\(height)")
-        print("🔍 Navigation grid actual size: \(navigationGrid.count)x\(navigationGrid.first?.count ?? 0)")
+        // print("🗺️ Navigation grid built successfully: \(width)x\(height)")
+        // print("🔍 Navigation grid actual size: \(navigationGrid.count)x\(navigationGrid.first?.count ?? 0)")
     }
     
     // MARK: - A* Pathfinding Implementation
     
-    private func findPathAStar(from start: SIMD2<Int>, to target: SIMD2<Int>) -> [SIMD2<Int>] {
-        guard let mazeService = mazeService else { 
-            print("⚠️ PathfindingService: No maze service in findPathAStar")
-            return [] 
+    private func findPathAStar(from start:  SIMD2<Int>, to target: SIMD2<Int>) -> [SIMD2<Int>] {
+        guard let mazeService = mazeService else {
+            // print("⚠️ PathfindingService: No maze service in findPathAStar")
+            return []
         }
         
         // Validate start and target positions
         guard isValidGridPosition(start) && isValidGridPosition(target) else {
-            print("⚠️ PathfindingService: Invalid start (\(start)) or target (\(target)) positions")
+            // print("⚠️ PathfindingService: Invalid start (\(start)) or target (\(target)) positions")
             return []
         }
         
         // Ensure navigation grid is properly sized
         guard !navigationGrid.isEmpty && !navigationGrid[0].isEmpty else {
-            print("⚠️ PathfindingService: Navigation grid is empty or malformed")
+            // print("⚠️ PathfindingService: Navigation grid is empty or malformed")
             buildNavigationGrid() // Try to rebuild
             if navigationGrid.isEmpty || navigationGrid[0].isEmpty {
-                print("❌ PathfindingService: Failed to rebuild navigation grid")
+                // print("❌ PathfindingService: Failed to rebuild navigation grid")
                 return []
             }
             return findPathAStar(from: start, to: target) // Retry after rebuilding
@@ -198,7 +204,7 @@ class PathfindingService: BaseService {
         // Double-check that start and target are within navigation grid bounds
         guard start.x < navigationGrid.count && start.y < navigationGrid[0].count &&
               target.x < navigationGrid.count && target.y < navigationGrid[0].count else {
-            print("⚠️ PathfindingService: Start (\(start)) or target (\(target)) outside navigation grid bounds \(navigationGrid.count)x\(navigationGrid[0].count)")
+            // print("⚠️ PathfindingService: Start (\(start)) or target (\(target)) outside navigation grid bounds \(navigationGrid.count)x\(navigationGrid[0].count)")
             return []
         }
         
@@ -222,7 +228,7 @@ class PathfindingService: BaseService {
                 // Add bounds checking here too
                 guard node1.x < navigationGrid.count && node1.y < navigationGrid[0].count &&
                       node2.x < navigationGrid.count && node2.y < navigationGrid[0].count else {
-                    print("⚠️ PathfindingService: Node out of bounds in openSet comparison")
+                    // print("⚠️ PathfindingService: Node out of bounds in openSet comparison")
                     return false
                 }
                 return navigationGrid[node1.x][node1.y].fScore < navigationGrid[node2.x][node2.y].fScore
@@ -231,7 +237,7 @@ class PathfindingService: BaseService {
             // Check if we reached the target
             if current == target {
                 let path = reconstructPath(from: start, to: target)
-                print("🎯 A* found path with \(path.count) waypoints after \(searchCount) searches")
+                // print("🎯 A* found path with \(path.count) waypoints after \(searchCount) searches")
                 return path
             }
             
@@ -247,7 +253,7 @@ class PathfindingService: BaseService {
                 
                 // Additional safety check before accessing navigation grid
                 guard neighbor.x < navigationGrid.count && neighbor.y < navigationGrid[0].count else {
-                    print("⚠️ PathfindingService: Neighbor \(neighbor) out of navigation grid bounds, skipping")
+                    // print("⚠️ PathfindingService: Neighbor \(neighbor) out of navigation grid bounds, skipping")
                     continue
                 }
                 
@@ -265,24 +271,24 @@ class PathfindingService: BaseService {
             }
         }
         
-        print("⚠️ A* failed to find path after \(searchCount) searches")
+        // print("⚠️ A* failed to find path after \(searchCount) searches")
         return []
     }
     
     /// Get navigable neighbors (cells that can be reached without going through walls)
     private func getNavigableNeighbors(of cell: SIMD2<Int>) -> [SIMD2<Int>] {
-        guard let mazeService = mazeService else { 
-            print("⚠️ PathfindingService: No maze service available in getNavigableNeighbors")
-            return [] 
+        guard let mazeService = mazeService else {
+            // print("⚠️ PathfindingService: No maze service available in getNavigableNeighbors")
+            return []
         }
         
         var neighbors: [SIMD2<Int>] = []
         let maze = mazeService.maze
         
         // Check bounds for current cell
-        guard isValidGridPosition(cell) else { 
-            print("⚠️ PathfindingService: Invalid current cell position \(cell)")
-            return [] 
+        guard isValidGridPosition(cell) else {
+            // print("⚠️ PathfindingService: Invalid current cell position \(cell)")
+            return []
         }
         
         let directions: [(SIMD2<Int>, Wall)] = [
@@ -296,42 +302,42 @@ class PathfindingService: BaseService {
             let neighborCell = cell + direction
             
             // Check if neighbor is within maze bounds FIRST
-            guard isValidGridPosition(neighborCell) else { 
-                print("🚫 Neighbor \(neighborCell) is out of bounds for maze \(maze.configuration.width)x\(maze.configuration.height)")
-                continue 
+            guard isValidGridPosition(neighborCell) else {
+                // print("🚫 Neighbor \(neighborCell) is out of bounds for maze \(maze.configuration.width)x\(maze.configuration.height)")
+                continue
             }
             
             // Additional safety check for navigation grid bounds
             guard neighborCell.x >= 0 && neighborCell.x < navigationGrid.count &&
                   neighborCell.y >= 0 && neighborCell.y < navigationGrid[0].count else {
-                print("🚫 Neighbor \(neighborCell) is out of navigation grid bounds \(navigationGrid.count)x\(navigationGrid[0].count)")
+                // print("🚫 Neighbor \(neighborCell) is out of navigation grid bounds \(navigationGrid.count)x\(navigationGrid[0].count)")
                 continue
             }
             
             // Check if there's no wall blocking the path
             if !mazeService.hasWall(at: cell, direction: wall) {
                 neighbors.append(neighborCell)
-                print("✅ Valid neighbor: \(cell) -> \(neighborCell) (no \(wall) wall)")
+                // print("✅ Valid neighbor: \(cell) -> \(neighborCell) (no \(wall) wall)")
             } else {
-                print("❌ Blocked neighbor: \(cell) -> \(neighborCell) (has \(wall) wall)")
+                // print("❌ Blocked neighbor: \(cell) -> \(neighborCell) (has \(wall) wall)")
             }
         }
         
-        print("🧭 Cell \(cell) has \(neighbors.count) navigable neighbors: \(neighbors)")
+        // print("🧭 Cell \(cell) has \(neighbors.count) navigable neighbors: \(neighbors)")
         return neighbors
     }
     
     private func isValidGridPosition(_ position: SIMD2<Int>) -> Bool {
-        guard let mazeService = mazeService else { 
-            print("⚠️ PathfindingService: No maze service in isValidGridPosition")
-            return false 
+        guard let mazeService = mazeService else {
+            // print("⚠️ PathfindingService: No maze service in isValidGridPosition")
+            return false
         }
         let maze = mazeService.maze
         let isValid = position.x >= 0 && position.x < maze.configuration.width &&
                      position.y >= 0 && position.y < maze.configuration.height
         
         if !isValid {
-            print("🚫 Position \(position) is invalid for maze bounds \(maze.configuration.width)x\(maze.configuration.height)")
+            // print("🚫 Position \(position) is invalid for maze bounds \(maze.configuration.width)x\(maze.configuration.height)")
         }
         
         return isValid
@@ -339,7 +345,7 @@ class PathfindingService: BaseService {
     
     private func resetNavigationGrid() {
         guard !navigationGrid.isEmpty && !navigationGrid[0].isEmpty else {
-            print("⚠️ PathfindingService: Cannot reset empty navigation grid")
+            // print("⚠️ PathfindingService: Cannot reset empty navigation grid")
             return
         }
         
@@ -364,12 +370,12 @@ class PathfindingService: BaseService {
             
             // Bounds check before accessing navigation grid
             guard current.x < navigationGrid.count && current.y < navigationGrid[0].count else {
-                print("⚠️ Path reconstruction failed - current position \(current) out of bounds")
+                // print("⚠️ Path reconstruction failed - current position \(current) out of bounds")
                 return []
             }
             
             guard let parent = navigationGrid[current.x][current.y].parent else {
-                print("⚠️ Path reconstruction failed - no parent for \(current)")
+                // print("⚠️ Path reconstruction failed - no parent for \(current)")
                 return []
             }
             current = parent
@@ -377,12 +383,12 @@ class PathfindingService: BaseService {
         }
         
         if safetyCounter >= maxPathLength {
-            print("⚠️ Path reconstruction stopped - possible infinite loop detected")
+            // print("⚠️ Path reconstruction stopped - possible infinite loop detected")
             return []
         }
         
         path.insert(start, at: 0)
-        print("🔄 Reconstructed path successfully with \(path.count) waypoints")
+        // print("🔄 Reconstructed path successfully with \(path.count) waypoints")
         return path
     }
     
@@ -395,9 +401,24 @@ class PathfindingService: BaseService {
     
     // MARK: - Coordinate Conversion
     
+    /// Improved conversion from world position to grid position with stability for similar positions
     private func worldToGridPosition(_ worldPos: SIMD3<Float>) -> SIMD2<Int> {
         guard let mazeService = mazeService else { return SIMD2<Int>(0, 0) }
-        return mazeService.getCellCoordinate(for: worldPos)
+        
+        // Get the raw cell coordinate from the maze service
+        let cellCoord = mazeService.getCellCoordinate(for: worldPos)
+        
+        // Convert from SIMD2<Float> to SIMD2<Int> with proper rounding
+        // Using rounded conversion instead of truncation for more stable results
+        let gridX = Int(round(cellCoord.x))
+        let gridY = Int(round(cellCoord.y))
+        
+        // Ensure the result is within valid maze bounds
+        let maze = mazeService.maze
+        let clampedX = max(0, min(maze.configuration.width - 1, gridX))
+        let clampedY = max(0, min(maze.configuration.height - 1, gridY))
+        
+        return SIMD2<Int>(clampedX, clampedY)
     }
     
     /// Convert cell coordinate path to world coordinate path

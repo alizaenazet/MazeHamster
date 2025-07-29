@@ -278,7 +278,7 @@ class AISystem: GameSystem {
     
     func initialize() {
         gameStartTime = Date()
-        print("🤖 Enhanced AI System with pathfinding initialized")
+        // print("🤖 Enhanced AI System with pathfinding initialized")
     }
     
     func update(deltaTime: TimeInterval) {
@@ -305,13 +305,13 @@ class AISystem: GameSystem {
 
             // NEW: Jika kucing ter-stun, jangan lakukan pergerakan AI
             if let currentCatStatus = catStatus, currentCatStatus.isStunned {
-                print("😴 Cat \(entityId) is stunned! Remaining time: \(String(format: "%.1f", max(0, currentCatStatus.stunEndTime?.timeIntervalSinceNow ?? 0)))s")
+                // print("😴 Cat \(entityId) is stunned! Remaining time: \(String(format: "%.1f", max(0, currentCatStatus.stunEndTime?.timeIntervalSinceNow ?? 0)))s")
                 continue // Lewati sisa logika update untuk kucing ini
             }
             
             // Don't activate cat until spawn delay has passed
             if !shouldCatBeActive {
-                print("😴 Cat waiting for spawn delay: \(String(format: "%.1f", catSpawnDelay - timeSinceStart))s remaining")
+                // print("😴 Cat waiting for spawn delay: \(String(format: "%.1f", catSpawnDelay - timeSinceStart))s remaining")
                 continue
             }
             
@@ -320,13 +320,13 @@ class AISystem: GameSystem {
                 if aiComponent.isSleepFinished() {
                     aiComponent.wakeUp()
                     componentManager.addComponent(aiComponent, to: entityId)
-                    print("🐱 Cat \(entityId) woke up and started pathfinding!")
+                    // print("🐱 Cat \(entityId) woke up and started pathfinding!")
                     
                     // Clear any existing path visualization and start fresh
                     pathfindingService.clearPathVisualization()
                 } else {
                     let remainingSleep = aiComponent.sleepDuration - (aiComponent.sleepStartTime?.timeIntervalSinceNow ?? 0)
-                    print("😴 Cat \(entityId) still sleeping for \(String(format: "%.1f", remainingSleep))s")
+                    // print("😴 Cat \(entityId) still sleeping for \(String(format: "%.1f", remainingSleep))s")
                     continue
                 }
             }
@@ -338,7 +338,7 @@ class AISystem: GameSystem {
             // Get target position
             guard let targetId = aiComponent.targetEntityId,
                   let targetTransform = componentManager.getComponent(TransformComponent.self, for: targetId) else {
-                print("⚠️ Cat \(entityId) has no target or target not found")
+                // print("⚠️ Cat \(entityId) has no target or target not found")
                 continue
             }
             
@@ -373,7 +373,7 @@ class AISystem: GameSystem {
     func shutdown() {
         pathfindingService.clearPathVisualization()
         realityEntities.removeAll()
-        print("🤖 Enhanced AI System shut down")
+        // print("🤖 Enhanced AI System shut down")
     }
     
     /// Register a RealityKit entity with the AI system
@@ -399,14 +399,14 @@ class AISystem: GameSystem {
         // Update the component
         componentManager.addComponent(aiComponent, to: catEntityId)
         
-        print("🐱 Chase behavior set up for cat - will start after \(catSpawnDelay)s spawn delay + \(aiComponent.sleepDuration)s sleep")
+        // print("🐱 Chase behavior set up for cat - will start after \(catSpawnDelay)s spawn delay + \(aiComponent.sleepDuration)s sleep")
     }
     
     /// Reset game timing (call when game restarts)
     func resetGameTiming() {
         gameStartTime = Date()
         pathfindingService.clearPathVisualization()
-        print("⏰ AI System timing reset")
+        // print("⏰ AI System timing reset")
     }
     
     // MARK: - Enhanced Pathfinding Logic
@@ -428,10 +428,10 @@ class AISystem: GameSystem {
             hasReachedEndOfPath(pathfindingComponent: pathfindingComponent)
         
         if shouldRecalculatePath {
-            print("🔄 Recalculating path for cat \(entityId)")
-            print("   Current: \(currentPosition)")
-            print("   Target: \(targetPosition)")
-            print("   Distance: \(distanceToTarget)")
+            // print("🔄 Recalculating path for cat \(entityId)")
+            // print("   Current: \(currentPosition)")
+            // print("   Target: \(targetPosition)")
+            // print("   Distance: \(distanceToTarget)")
             
             // Find new path using enhanced pathfinding
             let newPath = pathfindingService.findPath(from: currentPosition, to: targetPosition)
@@ -442,17 +442,17 @@ class AISystem: GameSystem {
                 pathfindingComponent.isFollowingPath = true
                 
                 // Visualize the path
-//                if let scene = sceneEntity {
-//                    pathfindingService.visualizePath(newPath, in: scene)
-//                }
+                if let scene = sceneEntity {
+                    pathfindingService.visualizePath(newPath, in: scene)
+                }
                 
-                print("🗺️ Cat \(entityId) found new path with \(newPath.count) waypoints")
-                print("   Path preview: \(newPath.prefix(3).map { "(\(String(format: "%.1f", $0.x)),\(String(format: "%.1f", $0.z)))" })")
+                // print("🗺️ Cat \(entityId) found new path with \(newPath.count) waypoints")
+                // print("   Path preview: \(newPath.prefix(3).map { "(\(String(format: "%.1f", $0.x)),\(String(format: "%.1f", $0.z)))" })")
             } else {
                 // No path found, stop following path
                 pathfindingComponent.isFollowingPath = false
                 pathfindingService.clearPathVisualization()
-                print("⚠️ Cat \(entityId) couldn't find path to target")
+                // print("⚠️ Cat \(entityId) couldn't find path to target")
             }
         }
     }
@@ -470,7 +470,7 @@ class AISystem: GameSystem {
         }
         
         guard let realityEntity = realityEntities[entityId] else {
-            print("⚠️ No reality entity found for cat \(entityId)")
+            // print("⚠️ No reality entity found for cat \(entityId)")
             return
         }
         
@@ -481,27 +481,27 @@ class AISystem: GameSystem {
         if currentWaypointIndex >= pathfindingComponent.currentPath.count {
             pathfindingComponent.isFollowingPath = false
             pathfindingService.clearPathVisualization()
-            print("🎯 Cat \(entityId) completed path")
+            // print("🎯 Cat \(entityId) completed path")
             return
         }
         
         let targetWaypoint = pathfindingComponent.currentPath[currentWaypointIndex]
         let distanceToWaypoint = simd_distance(currentPosition, targetWaypoint)
         
-        print("🚶 Cat \(entityId) moving to waypoint \(currentWaypointIndex): \(targetWaypoint)")
-        print("   Current pos: \(currentPosition)")
-        print("   Distance to waypoint: \(distanceToWaypoint)")
+        // print("🚶 Cat \(entityId) moving to waypoint \(currentWaypointIndex): \(targetWaypoint)")
+        // print("   Current pos: \(currentPosition)")
+        // print("   Distance to waypoint: \(distanceToWaypoint)")
         
         // Check if we've reached the current waypoint
         if distanceToWaypoint < 0.4 { // Waypoint reached threshold
             pathfindingComponent.currentPathIndex += 1
-            print("✅ Cat \(entityId) reached waypoint \(currentWaypointIndex)")
+            // print("✅ Cat \(entityId) reached waypoint \(currentWaypointIndex)")
             
             // Check if we've reached the final waypoint
             if pathfindingComponent.currentPathIndex >= pathfindingComponent.currentPath.count {
                 pathfindingComponent.isFollowingPath = false
                 pathfindingService.clearPathVisualization()
-                print("🎯 Cat \(entityId) reached final destination")
+                // print("🎯 Cat \(entityId) reached final destination")
                 return
             }
         }
@@ -510,7 +510,7 @@ class AISystem: GameSystem {
         var effectiveSpeed = aiComponent.maxSpeed
         if let currentCatStatus = catStatus, currentCatStatus.isSpeedBoosted {
             effectiveSpeed *= currentCatStatus.speedMultiplier
-            print("🐱 Cat \(entityId) speed boosted! Effective speed: \(effectiveSpeed)")
+            // print("🐱 Cat \(entityId) speed boosted! Effective speed: \(effectiveSpeed)")
         }
         
         // Move towards current waypoint with enhanced movement
@@ -539,7 +539,7 @@ class AISystem: GameSystem {
         let distance = length(direction)
         
         guard distance > 0.01 else {
-            print("🎯 Cat too close to waypoint, not moving")
+            // print("🎯 Cat too close to waypoint, not moving")
             return
         }
         
@@ -555,11 +555,11 @@ class AISystem: GameSystem {
         let newPosition = currentPosition + movement
         entity.position = newPosition
         
-        print("🚶 Cat enhanced movement:")
-        print("   From: (\(String(format: "%.2f", currentPosition.x)), \(String(format: "%.2f", currentPosition.z)))")
-        print("   To: (\(String(format: "%.2f", newPosition.x)), \(String(format: "%.2f", newPosition.z)))")
-        print("   Target: (\(String(format: "%.2f", targetPosition.x)), \(String(format: "%.2f", targetPosition.z)))")
-        print("   Move distance: \(String(format: "%.3f", moveDistance))")
+        // print("🚶 Cat enhanced movement:")
+        // print("   From: (\(String(format: "%.2f", currentPosition.x)), \(String(format: "%.2f", currentPosition.z)))")
+        // print("   To: (\(String(format: "%.2f", newPosition.x)), \(String(format: "%.2f", newPosition.z)))")
+        // print("   Target: (\(String(format: "%.2f", targetPosition.x)), \(String(format: "%.2f", targetPosition.z)))")
+        // print("   Move distance: \(String(format: "%.3f", moveDistance))")
     }
     
     private func hasTargetMovedSignificantly(currentPath: [SIMD3<Float>], targetPosition: SIMD3<Float>) -> Bool {
@@ -573,7 +573,7 @@ class AISystem: GameSystem {
         let hasMoved = distanceToPathDestination > significantMoveThreshold
         
         if hasMoved {
-            print("🎯 Target moved significantly: \(distanceToPathDestination) > \(significantMoveThreshold)")
+            // print("🎯 Target moved significantly: \(distanceToPathDestination) > \(significantMoveThreshold)")
         }
         
         return hasMoved
@@ -592,7 +592,7 @@ class AISystem: GameSystem {
         let collisionDistance: Float = 0.6 // Collision radius
         
         if distance < collisionDistance {
-            print("💥 Cat caught player! Distance: \(String(format: "%.2f", distance))")
+            // print("💥 Cat caught player! Distance: \(String(format: "%.2f", distance))")
             pathfindingService.clearPathVisualization() // Clear path when game ends
             return true
         }
@@ -644,7 +644,7 @@ class AISystem: GameSystem {
     
     func setCatSpawnDelay(_ delay: TimeInterval) {
         catSpawnDelay = delay
-        print("⏰ Cat spawn delay set to \(delay)s")
+        // print("⏰ Cat spawn delay set to \(delay)s")
     }
 }
 // CameraSystem removed - using simplified fixed camera approach
@@ -672,7 +672,7 @@ class ECSWorld: ObservableObject {
     
     func clearAllComponents() {
 //        componentManager.clearAll()
-        print("🧹 ECS World: All components cleared")
+        // print("🧹 ECS World: All components cleared")
     }
 
     
@@ -703,7 +703,7 @@ class ECSWorld: ObservableObject {
             system.initialize()
         }
         isRunning = true
-        print("🌍 ECS World with pathfinding initialized")
+        // print("🌍 ECS World with pathfinding initialized")
     }
     
     /// Update all systems
@@ -723,7 +723,7 @@ class ECSWorld: ObservableObject {
             system.shutdown()
         }
         isRunning = false
-        print("🌍 ECS World shut down")
+        // print("🌍 ECS World shut down")
     }
     
     /// Get a specific system

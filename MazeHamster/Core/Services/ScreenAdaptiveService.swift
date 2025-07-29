@@ -111,7 +111,7 @@ class ScreenAdaptiveService: BaseService {
         super.setupService()
         detectScreenProperties()
         setupOrientationObserver()
-        print("✅ ScreenAdaptiveService configured successfully")
+       // print("✅ ScreenAdaptiveService configured successfully")
     }
     
     // MARK: - Public Methods
@@ -183,7 +183,7 @@ class ScreenAdaptiveService: BaseService {
     private func detectScreenProperties() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {
-            print("⚠️ Could not get window for screen detection")
+           // print("⚠️ Could not get window for screen detection")
             return
         }
         
@@ -207,13 +207,13 @@ class ScreenAdaptiveService: BaseService {
         
         currentScreenInfo = screenInfo
         
-        print("📱 Screen detected:")
-        print("   Size: \(size)")
-        print("   Scale: \(scale)")
-        print("   Device: \(deviceType)")
-        print("   Orientation: \(orientation)")
-        print("   Aspect Ratio: \(aspectRatio)")
-        print("   Diagonal: \(screenInfo.screenDiagonal)")
+       // print("📱 Screen detected:")
+       // print("   Size: \(size)")
+       // print("   Scale: \(scale)")
+       // print("   Device: \(deviceType)")
+       // print("   Orientation: \(orientation)")
+       // print("   Aspect Ratio: \(aspectRatio)")
+       // print("   Diagonal: \(screenInfo.screenDiagonal)")
     }
     
     private func detectDeviceType(screenSize: CGSize, scale: CGFloat) -> DeviceType {
@@ -317,7 +317,7 @@ class ScreenAdaptiveService: BaseService {
         if let observer = orientationObserver {
             NotificationCenter.default.removeObserver(observer)
         }
-        print("🧹 ScreenAdaptiveService deallocated")
+       // print("🧹 ScreenAdaptiveService deallocated")
     }
 }
 

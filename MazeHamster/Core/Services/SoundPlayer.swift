@@ -19,14 +19,14 @@ class SoundPlayer {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print("Failed to set audio session category: \(error.localizedDescription)")
+            // print("Failed to set audio session category: \(error.localizedDescription)")
         }
     }
 
     /// Loads a sound file into memory. Call this during initialization or before first use.
     func loadSound(named fileName: String, fileExtension: String) {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension) else {
-            print("Sound file not found: \(fileName).\(fileExtension)")
+            // print("Sound file not found: \(fileName).\(fileExtension)")
             return
         }
 
@@ -34,9 +34,9 @@ class SoundPlayer {
             let player = try AVAudioPlayer(contentsOf: url)
             player.prepareToPlay() // Pre-load audio data
             audioPlayers[fileName] = player
-            print("🎶 Sound loaded: \(fileName)")
+            // print("🎶 Sound loaded: \(fileName)")
         } catch {
-            print("Could not load sound file \(fileName).\(fileExtension): \(error.localizedDescription)")
+            // print("Could not load sound file \(fileName).\(fileExtension): \(error.localizedDescription)")
         }
     }
 
@@ -53,12 +53,12 @@ class SoundPlayer {
                 DispatchQueue.main.asyncAfter(deadline: .now() + newPlayer.duration) { [weak self] in
                     self?.activePlayers.removeAll(where: { $0 == newPlayer })
                 }
-                print("🔊 Playing sound: \(fileName)")
+                // print("🔊 Playing sound: \(fileName)")
             } catch {
-                print("Failed to create new player instance for \(fileName): \(error.localizedDescription)")
+                // print("Failed to create new player instance for \(fileName): \(error.localizedDescription)")
             }
         } else {
-            print("Sound not loaded: \(fileName)")
+            // print("Sound not loaded: \(fileName)")
         }
     }
     
