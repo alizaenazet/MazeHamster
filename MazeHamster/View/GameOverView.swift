@@ -66,38 +66,38 @@ struct GameOverScene: View {
                 .padding(.top, 60)
                 
                 Spacer()
-            
-                VStack(spacing: 24) {
-                    PremiumScoreCard(
-                        title: "Final Score",
-                        score: gameViewModel.score,
-                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
-                        accentColor: .cyan,
-                        isHighlighted: isNewHighScore
-                    )
-                    .scaleEffect(showScores ? 1.0 : 0.5)
-                    .opacity(showScores ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: showScores)
-
-                    PremiumScoreCard(
-                        title: "Best Score",
-                        score: highScore,
-                        subtitle: "Personal Record",
-                        accentColor: .yellow,
-                        isHighlighted: false
-                    )
-                    .scaleEffect(showScores ? 1.0 : 0.5)
-                    .opacity(showScores ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showScores)
-
-                    if isNewHighScore {
-                        HighScoreCelebration()
-                            .scaleEffect(showScores ? 1.0 : 0.1)
-                            .opacity(showScores ? 1.0 : 0.0)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.5), value: showScores)
-                    }
-                }
-                .padding(.horizontal, 30)
+//            
+//                VStack(spacing: 24) {
+//                    PremiumScoreCard(
+//                        title: "Final Score",
+//                        score: gameViewModel.score,
+//                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
+//                        accentColor: .cyan,
+//                        isHighlighted: isNewHighScore
+//                    )
+//                    .scaleEffect(showScores ? 1.0 : 0.5)
+//                    .opacity(showScores ? 1.0 : 0.0)
+//                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: showScores)
+//
+//                    PremiumScoreCard(
+//                        title: "Best Score",
+//                        score: highScore,
+//                        subtitle: "Personal Record",
+//                        accentColor: .yellow,
+//                        isHighlighted: false
+//                    )
+//                    .scaleEffect(showScores ? 1.0 : 0.5)
+//                    .opacity(showScores ? 1.0 : 0.0)
+//                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showScores)
+//
+//                    if isNewHighScore {
+//                        HighScoreCelebration()
+//                            .scaleEffect(showScores ? 1.0 : 0.1)
+//                            .opacity(showScores ? 1.0 : 0.0)
+//                            .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.5), value: showScores)
+//                    }
+//                }
+//                .padding(.horizontal, 30)
                 
                 Spacer()
                 
@@ -125,16 +125,16 @@ struct GameOverScene: View {
                         gameViewModel.resetGame()
                     }
                     
-                    // New Maze Button
-                    AnimatedGameButton(
-                        icon: "shuffle",
-                        title: "New Maze",
-                        isVisible: showButtons,
-                        delay: 0.2
-                    ) {
-                        HapticManager.impact(.medium)
-                        gameViewModel.generateNewMaze()
-                    }
+//                    // New Maze Button
+//                    AnimatedGameButton(
+//                        icon: "shuffle",
+//                        title: "New Maze",
+//                        isVisible: showButtons,
+//                        delay: 0.2
+//                    ) {
+//                        HapticManager.impact(.medium)
+//                        gameViewModel.generateNewMaze()
+//                    }
                 }
                 .padding(.bottom, 60)
             }

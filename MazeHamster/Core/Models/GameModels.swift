@@ -45,8 +45,8 @@ struct MazeConfiguration {
     let wallThickness: Float
     
     static let `default` = MazeConfiguration(
-        width: 9,
-        height: 18,
+        width: 10,
+        height: 12,
         cellSize: 1.0,
         wallHeight: 1.0,
         wallThickness: 0.1

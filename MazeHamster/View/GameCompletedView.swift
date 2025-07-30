@@ -68,34 +68,34 @@ struct GameCompletedScene: View {
                 Spacer()
             
                 VStack(spacing: 24) {
-                    PremiumScoreCard(
-                        title: "Final Score",
-                        score: gameViewModel.score,
-                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
-                        accentColor: .green,
-                        isHighlighted: isNewHighScore
-                    )
-                    .scaleEffect(showScores ? 1.0 : 0.5)
-                    .opacity(showScores ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: showScores)
-
-                    PremiumScoreCard(
-                        title: "Best Score",
-                        score: highScore,
-                        subtitle: "Personal Record",
-                        accentColor: .yellow,
-                        isHighlighted: false
-                    )
-                    .scaleEffect(showScores ? 1.0 : 0.5)
-                    .opacity(showScores ? 1.0 : 0.0)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showScores)
-
-                    if isNewHighScore {
-                        HighScoreCelebration()
-                            .scaleEffect(showScores ? 1.0 : 0.1)
-                            .opacity(showScores ? 1.0 : 0.0)
-                            .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.5), value: showScores)
-                    }
+//                    PremiumScoreCard(
+//                        title: "Final Score",
+//                        score: gameViewModel.score,
+//                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
+//                        accentColor: .green,
+//                        isHighlighted: isNewHighScore
+//                    )
+//                    .scaleEffect(showScores ? 1.0 : 0.5)
+//                    .opacity(showScores ? 1.0 : 0.0)
+//                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: showScores)
+//
+//                    PremiumScoreCard(
+//                        title: "Best Score",
+//                        score: highScore,
+//                        subtitle: "Personal Record",
+//                        accentColor: .yellow,
+//                        isHighlighted: false
+//                    )
+//                    .scaleEffect(showScores ? 1.0 : 0.5)
+//                    .opacity(showScores ? 1.0 : 0.0)
+//                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showScores)
+//
+//                    if isNewHighScore {
+//                        HighScoreCelebration()
+//                            .scaleEffect(showScores ? 1.0 : 0.1)
+//                            .opacity(showScores ? 1.0 : 0.0)
+//                            .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.5), value: showScores)
+//                    }
                     
                     // Motivational Message
                     VStack(spacing: 8) {
@@ -137,16 +137,16 @@ struct GameCompletedScene: View {
                     }
 
                     // Play Again Button
-                    AnimatedGameButton(
-                        icon: "arrow.counterclockwise",
-                        title: "Play Again",
-                        isVisible: showButtons,
-                        delay: 0.1
-                    ) {
-                        HapticManager.success()
-                        gameViewModel.resetGame()
-                    }
-                    
+//                    AnimatedGameButton(
+//                        icon: "arrow.counterclockwise",
+//                        title: "Play Again",
+//                        isVisible: showButtons,
+//                        delay: 0.1
+//                    ) {
+//                        HapticManager.success()
+//                        gameViewModel.resetGame()
+//                    }
+//                    
                     // New Maze Button
                     AnimatedGameButton(
                         icon: "shuffle",

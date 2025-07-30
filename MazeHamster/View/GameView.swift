@@ -27,24 +27,31 @@ struct GameView: View {
             
             ZStack{
                 AnimatedBackgroundView()
-                RealityView { content in
-                    // Initialize the game scene through ViewModel
-                    let scene = gameViewModel.initializeScene()
-                    content.add(scene)
-                } update: { content in
-                    // Update the game on each frame
-                    gameViewModel.updateGame(deltaTime: 1.0/60.0)
+                
+                // Show loading screen when isLoading is true
+                if gameViewModel.isLoading {
+                    loadingView
+                } else {
+                    // Only render RealityView when loading is complete
+                    RealityView { content in
+                        // Initialize the game scene through ViewModel
+                        let scene = gameViewModel.initializeScene()
+                        content.add(scene)
+                    } update: { content in
+                        // Update the game on each frame
+                        gameViewModel.updateGame(deltaTime: 1.0/60.0)
+                    }
+                    .realityViewCameraControls(.none)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .ignoresSafeArea(.all)
+                    .onAppear {
+                        gameViewModel.viewDidAppear()
+                    }
+                    .onDisappear {
+                        gameViewModel.viewWillDisappear()
+                    }
                 }
-                .realityViewCameraControls(.none)
-                .disabled(gameViewModel.isLoading)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-                .onAppear {
-                    gameViewModel.viewDidAppear()
-                }
-                .onDisappear {
-                    gameViewModel.viewWillDisappear()
-                }
+                
 //                gameOverlay
             }
         }
@@ -53,6 +60,98 @@ struct GameView: View {
 }
 
 extension GameView {
+    
+    // MARK: - Loading View
+    private var loadingView: some View {
+        VStack(spacing: 40) {
+            Spacer()
+            
+            // Loading Animation with SF Symbol
+            VStack(spacing: 20) {
+                Image(systemName: "gamecontroller.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(.white)
+                    .scaleEffect(gameViewModel.isLoading ? 1.2 : 1.0)
+                    .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: gameViewModel.isLoading)
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "circle.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(.white)
+                        .opacity(0.3)
+                        .scaleEffect(1.5)
+                        .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: false).delay(0.0), value: gameViewModel.isLoading)
+                    
+                    Image(systemName: "circle.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(.white)
+                        .opacity(0.3)
+                        .scaleEffect(1.5)
+                        .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: false).delay(0.2), value: gameViewModel.isLoading)
+                    
+                    Image(systemName: "circle.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(.white)
+                        .opacity(0.3)
+                        .scaleEffect(1.5)
+                        .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: false).delay(0.4), value: gameViewModel.isLoading)
+                }
+            }
+            
+            // Loading Text with SF Symbols
+            VStack(spacing: 15) {
+                HStack(spacing: 10) {
+                    Image(systemName: "maze")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                    
+                    Text("Loading Game...")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                }
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "hammer.fill")
+                        .font(.caption)
+                        .foregroundColor(.blue)
+                    
+                    Text("Preparing your maze adventure")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.9))
+                }
+                
+                // Additional loading tips
+                VStack(spacing: 8) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "lightbulb.fill")
+                            .font(.caption2)
+                            .foregroundColor(.yellow)
+                        
+                        Text("Tip: Use swipe gestures to move the hamster")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    
+                    HStack(spacing: 8) {
+                        Image(systemName: "cat.fill")
+                            .font(.caption2)
+                            .foregroundColor(.purple)
+                        
+                        Text("Avoid the cats and reach the cheese!")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                }
+                .padding(.top, 10)
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea(.all)
+    }
+    
     private var gameOverlay: some View {
         VStack {
             // Top HUD
@@ -107,12 +206,6 @@ extension GameView {
     
     private var gameControls: some View {
         VStack(spacing: 20) {
-            // Loading Indicator
-            if gameViewModel.isLoading {
-                ProgressView("Loading...")
-                    .progressViewStyle(CircularProgressViewStyle())
-            }
-            
             // Error Message
             if let errorMessage = gameViewModel.errorMessage {
                 Text(errorMessage)
