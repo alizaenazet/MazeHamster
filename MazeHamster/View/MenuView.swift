@@ -1,77 +1,163 @@
 //
-//  MenuView.swift
-//  MazeHamster
+//  MainMenuScene.swift
+//  MazeHamsterGame
 //
-//  Created by Ali zaenal on 21/07/25.
+//  Created by Darmawan on 30/07/25.
 //
 
 import SwiftUI
 
-struct MenuView: View {
+struct MainMenuScene: View {
+    @State private var showContent = false
+    @State private var buttonScale: CGFloat = 1.0
+    @State private var isButtonPressed = false
     
-    @State private var isStartingGame = false
     var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
+        ZStack {
+            // Background
+            AnimatedBackgroundView()
             
-            // Game Title
-            VStack(spacing: 10) {
-                Text("MazeBall")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                Text("Tilt to Navigate")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-            }
-            
-            Spacer()
-            
-            // Instructions
-            VStack(spacing: 15) {
-                Text("🎯 Guide the ball to the exit")
-                Text("🐱 Avoid the cat")
-                Text("📱 Tilt your device to move")
-                Text("🏃‍♂️ Cat spawns after 2 seconds")
-            }
-            .font(.body)
-            .foregroundColor(.white)
-            .multilineTextAlignment(.center)
-            
-            Spacer()
-            
-            // Start Button
-            
-            NavigationLink(destination: GameView()
-                .navigationBarHidden(true),
-                isActive: $isStartingGame) {
-                
-                Button("Start Game") {
-                    print("Game Started")
-                    HapticManager.impact(.medium)
-                    isStartingGame = true
+            // Main Content
+            VStack(spacing: 0) {
+                // Logo Section
+                VStack {
+                    Image("MazeHamsterText")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 280, maxHeight: 120)
+                        .scaleEffect(showContent ? 1.0 : 0.8)
+                        .opacity(showContent ? 1.0 : 0.0)
+                        .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.2), value: showContent)
                 }
-                .buttonStyle(GameButtonStyle(color: .green))
-                .scaleEffect(1.2)
+                .padding(.top, 60)
+                
+                Spacer()
+                
+                // Instructions Section
+                VStack(spacing: 20) {
+                    Text("How to Play")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .scaleEffect(showContent ? 1.0 : 0.8)
+                        .opacity(showContent ? 1.0 : 0.0)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.4), value: showContent)
+                    
+                    VStack(spacing: 16) {
+                        InstructionRow(
+                            icon: "🎯",
+                            text: "Guide the ball to the exit",
+                            delay: 0.5
+                        )
+                        
+                        InstructionRow(
+                            icon: "🐱",
+                            text: "Avoid the cat",
+                            delay: 0.6
+                        )
+                        
+                        InstructionRow(
+                            icon: "📱",
+                            text: "Tilt your device to move",
+                            delay: 0.7
+                        )
+                        
+                        InstructionRow(
+                            icon: "🏃‍♂️",
+                            text: "Cat spawns after 2 seconds",
+                            delay: 0.8
+                        )
+                    }
+                }
+                .padding(.horizontal, 20)
+                
+                Spacer()
+                
+                // Start Button Section
+                VStack(spacing: 20) {
+                    NavigationLink(destination: GameView()
+                        .navigationBarHidden(true)) {
+                        ZStack {
+                            Image("HamsterButton")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 140, height: 140)
+                                .scaleEffect(isButtonPressed ? 0.95 : buttonScale)
+                                .shadow(color: .pink.opacity(0.5), radius: 20, x: 0, y: 10)
+                        }
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .simultaneousGesture(TapGesture().onEnded {
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            isButtonPressed = true
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            withAnimation(.easeInOut(duration: 0.1)) {
+                                isButtonPressed = false
+                            }
+                        }
+                        
+                        print("START GAME")
+                    })
+                    .scaleEffect(showContent ? 1.0 : 0.5)
+                    .opacity(showContent ? 1.0 : 0.0)
+                    .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(1.0), value: showContent)
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                            buttonScale = 1.1
+                        }
+                    }
+                }
+                .padding(.bottom, 40)
+        
             }
+            .padding(.horizontal, 30)
+        }
+        .onAppear {
+            withAnimation {
+                showContent = true
+            }
+        }
+    }
+}
+
+struct InstructionRow: View {
+    let icon: String
+    let text: String
+    let delay: Double
+    @State private var showRow = false
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(icon)
+                .font(.title2)
+                .frame(width: 30)
             
+            Text(text)
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.leading)
             
             Spacer()
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
         .background(
-            LinearGradient(
-                gradient: Gradient(colors: [.blue.opacity(0.3), .purple.opacity(0.3)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+                .opacity(0.3)
         )
-        .edgesIgnoringSafeArea(.all)
+        .scaleEffect(showRow ? 1.0 : 0.8)
+        .opacity(showRow ? 1.0 : 0.0)
+        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(delay), value: showRow)
+        .onAppear {
+            showRow = true
+        }
     }
 }
 
 #Preview {
-    MenuView()
+    MainMenuScene()
 }

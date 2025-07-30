@@ -174,28 +174,35 @@ class EntityFactory: EntityFactoryProtocol {
         let catSize = SIMD3<Float>(0.4, 0.4, 0.4)
         
         if let catEntity = try? Entity.load(named: "Cat", in: mazeHamsterAssetsBundle) {
-            // print("🐱 Cat agent loaded from model")
+            print("🐱 Cat agent loaded from model")
             cat = catEntity
-        }else {
-            // Create box shape with green color
+            cat.name = "CatAgent" // Ensure name is set
             
+            // === NEW: Fix model's default rotation ===
+            // Adjust based on your 3D model's default orientation
+            // Try different values if cat still faces wrong direction:
+            // 0 = default, π/2 = 90°, π = 180°, 3π/2 = 270°
+            cat.transform.rotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+            
+        } else {
+            // Create box shape with green color
             let catMesh = MeshResource.generateBox(size: catSize)
             let catMaterial = SimpleMaterial(color: .green, isMetallic: false)
             cat.components.set(ModelComponent(mesh: catMesh, materials: [catMaterial]))
         }
         
-        
+        // === IMPORTANT: Remove angular damping to allow rotation ===
         // Add physics components with proper collision setup
         var physicsBody = PhysicsBodyComponent(
             shapes: [.generateBox(size: catSize)],
             mass: 1.0,
-            material: physicsMaterials.ball, // Using ball material for similar behavior
+            material: physicsMaterials.ball,
             mode: .dynamic
         )
         
-        // Add velocity damping to prevent excessive speed
-        physicsBody.linearDamping = 0.8  // Higher damping for more controlled movement
-        physicsBody.angularDamping = 0.9  // Prevent excessive rotation
+        // Add velocity damping but REDUCE angular damping to allow rotation
+        physicsBody.linearDamping = 0.8  // Keep high for controlled movement
+        physicsBody.angularDamping = 0.3  // REDUCED from 0.9 to allow rotation
         
         let collision = CollisionComponent(
             shapes: [.generateBox(size: catSize)]
@@ -204,7 +211,7 @@ class EntityFactory: EntityFactoryProtocol {
         cat.components.set(physicsBody)
         cat.components.set(collision)
         
-        // print("🐱 Cat agent entity created with green box appearance")
+        print("🐱 Cat agent entity created with rotation capability")
         return cat
     }
     
@@ -216,11 +223,15 @@ class EntityFactory: EntityFactoryProtocol {
         // Set initial position
         cat.position = startPosition
         
-        // Create and add transform component
+        // === NEW: Set proper initial rotation ===
+        let initialRotation = simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))
+        cat.transform.rotation = initialRotation
+        
+        // Create and add transform component with rotation
         let transformComponent = TransformComponent(
             entityId: entityId,
             position: startPosition,
-            rotation: simd_quatf(ix: 0, iy: 0, iz: 0, r: 1),
+            rotation: initialRotation,
             scale: SIMD3<Float>(1, 1, 1)
         )
         componentManager.addComponent(transformComponent, to: entityId)
@@ -234,13 +245,15 @@ class EntityFactory: EntityFactoryProtocol {
         )
         componentManager.addComponent(gameEntityComponent, to: entityId)
         
-        // Create and add AI agent component
-        let aiAgentComponent = AIAgentComponent(
+        // Create and add AI agent component with rotation settings
+        var aiAgentComponent = AIAgentComponent(
             entityId: entityId,
-            maxSpeed: 0.3,  // Much slower - was 0.8, now 0.3
-            maxAcceleration: 0.8,  // Much gentler acceleration
+            maxSpeed: 0.3,
+            maxAcceleration: 0.8,
             sleepDuration: sleepDuration
         )
+        // NEW: Add rotation speed property
+        aiAgentComponent.rotationSpeed = 6.0
         componentManager.addComponent(aiAgentComponent, to: entityId)
         
         // Create and add pathfinding component
@@ -270,14 +283,14 @@ class EntityFactory: EntityFactoryProtocol {
         )
         componentManager.addComponent(renderComponent, to: entityId)
         
-        // NEW: Tambahkan CatStatusComponent ke entitas kucing di sini
+        // Add CatStatusComponent
         let catStatusComponent = CatStatusComponent(entityId: entityId)
         componentManager.addComponent(catStatusComponent, to: entityId)
         
-        // print("🐱 Cat entity with ECS components created at position: \(startPosition)")
+        print("🐱 Cat entity with ECS components and rotation created at position: \(startPosition)")
         return (cat, entityId)
     }
-    
+
     /// Create a light entity for scene illumination
     func createLight(type: LightType = .directional, intensity: Float = 1000) -> Entity {
         let light = Entity()

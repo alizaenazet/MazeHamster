@@ -1,114 +1,203 @@
 //
-//  GameOverView.swift
-//  MazeHamster
+//  GameOverScene.swift
+//  MazeHamsterGame
 //
-//  Created by Ali zaenal on 21/07/25.
+//  Created by Darmawan on 30/07/25.
 //
 
 import SwiftUI
 
-struct GameOverView: View {
+struct GameOverScene: View {
     @EnvironmentObject var gameViewModel: GameViewModel
+    @State private var highScore: Int = 2100
+    @State private var isNewHighScore: Bool = false
+    @State private var showContent = false
+    @State private var animateTitle = false
+    @State private var showScores = false
+    @State private var showButtons = false
+    @State private var particleAnimations: [Bool] = Array(repeating: false, count: 15)
     
-    var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
-            
-            // Game Over Animation
-            VStack(spacing: 20) {
-                Text("😿")
-                    .font(.system(size: 80))
-                    .scaleEffect(gameViewModel.isGameFailed ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true), value: gameViewModel.isGameFailed)
-                
-                Text("Game Over")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
-                
-                Text("The Cat Caught You!")
-                    .font(.title2)
-                    .foregroundColor(.white)
-            }
-            
-            Spacer()
-            
-            // Score Display
-            VStack(spacing: 10) {
-                Text("Score")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-                
-                Text("\(gameViewModel.score)")
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .foregroundColor(.orange)
-                
-                Text("Maze Size: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            .padding()
-            .background(Color.white.opacity(0.1))
-            .cornerRadius(15)
-            
-            Spacer()
-            
-            // Motivational Message
-            VStack(spacing: 10) {
-                Text("Don't Give Up!")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                
-                Text("Try different strategies:")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("• Move quickly when cat spawns")
-                    Text("• Use maze walls to block the cat")
-                    Text("• Plan your route to the exit")
-                }
-                .font(.caption)
-                .foregroundColor(.white)
-            }
-            .padding()
-            .background(Color.white.opacity(0.05))
-            .cornerRadius(10)
-            
-            Spacer()
-            
-            // Action Buttons
-            VStack(spacing: 15) {
-                Button("Try Again") {
-                    HapticManager.impact(.heavy)
-                    gameViewModel.resetGame()
-                }
-                .buttonStyle(GameButtonStyle(color: .orange))
-                
-                Button("New Maze") {
-                    HapticManager.impact(.medium)
-                    gameViewModel.generateNewMaze()
-                }
-                .buttonStyle(GameButtonStyle(color: .purple))
-            }
-            
-            Spacer()
+    private func checkForNewHighScore() {
+        if gameViewModel.score > highScore {
+            isNewHighScore = true
+            highScore = gameViewModel.score
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(
-            LinearGradient(
-                gradient: Gradient(colors: [.red.opacity(0.3), .orange.opacity(0.3)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+    }
+    
+    private func startAnimationSequence() {
+        // Title animation
+        withAnimation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.3)) {
+            animateTitle = true
+        }
+        
+        // Score cards animation
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.6)) {
+            showScores = true
+        }
+        
+        // Buttons animation
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(1.0)) {
+            showButtons = true
+        }
+        
+        // Particle animations
+        for i in 0..<particleAnimations.count {
+            withAnimation(.easeInOut(duration: 0.8).delay(Double(i) * 0.1 + 0.2)) {
+                particleAnimations[i] = true
+            }
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            // Animated Background
+            AnimatedBackgroundView()
+            
+            VStack(spacing: 0) {
+                VStack {
+                    Image("GameOverText")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: 300)
+                        .scaleEffect(animateTitle ? 1.0 : 0.3)
+                        .opacity(animateTitle ? 1.0 : 0.0)
+        
+                }
+                .padding(.top, 60)
+                
+                Spacer()
+            
+                VStack(spacing: 24) {
+                    PremiumScoreCard(
+                        title: "Final Score",
+                        score: gameViewModel.score,
+                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
+                        accentColor: .cyan,
+                        isHighlighted: isNewHighScore
+                    )
+                    .scaleEffect(showScores ? 1.0 : 0.5)
+                    .opacity(showScores ? 1.0 : 0.0)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.1), value: showScores)
+
+                    PremiumScoreCard(
+                        title: "Best Score",
+                        score: highScore,
+                        subtitle: "Personal Record",
+                        accentColor: .yellow,
+                        isHighlighted: false
+                    )
+                    .scaleEffect(showScores ? 1.0 : 0.5)
+                    .opacity(showScores ? 1.0 : 0.0)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showScores)
+
+                    if isNewHighScore {
+                        HighScoreCelebration()
+                            .scaleEffect(showScores ? 1.0 : 0.1)
+                            .opacity(showScores ? 1.0 : 0.0)
+                            .animation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.5), value: showScores)
+                    }
+                }
+                .padding(.horizontal, 30)
+                
+                Spacer()
+                
+                HStack(spacing: 40) {
+                    // Home Button (Reset to Main Menu)
+                    AnimatedGameButton(
+                        icon: "house.fill",
+                        title: "Home",
+                        isVisible: showButtons,
+                        delay: 0.0
+                    ) {
+                        HapticManager.impact(.medium)
+                        // Navigate to main menu - you'll need to implement this navigation
+                        print("Navigate to main menu")
+                    }
+
+                    // Restart Button (Try Again)
+                    AnimatedGameButton(
+                        icon: "arrow.counterclockwise",
+                        title: "Restart",
+                        isVisible: showButtons,
+                        delay: 0.1
+                    ) {
+                        HapticManager.impact(.heavy)
+                        gameViewModel.resetGame()
+                    }
+                    
+                    // New Maze Button
+                    AnimatedGameButton(
+                        icon: "shuffle",
+                        title: "New Maze",
+                        isVisible: showButtons,
+                        delay: 0.2
+                    ) {
+                        HapticManager.impact(.medium)
+                        gameViewModel.generateNewMaze()
+                    }
+                }
+                .padding(.bottom, 60)
+            }
+        }
         .onAppear {
+            checkForNewHighScore()
+            showContent = true
+            startAnimationSequence()
             HapticManager.error()
         }
     }
 }
 
+struct AnimatedGameButton: View {
+    let icon: String
+    let title: String
+    let isVisible: Bool
+    let delay: Double
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isPressed = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        isPressed = false
+                    }
+                    action()
+                }
+            }) {
+                ZStack {
+                    Image("ButtonBackground")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .scaleEffect(isPressed ? 0.95 : 1.0)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 28, weight: .semibold))
+                        .foregroundColor(.white)
+                }
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            Text(title)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .opacity(0.8)
+        }
+        .scaleEffect(isVisible ? 1.0 : 0.5)
+        .opacity(isVisible ? 1.0 : 0.0)
+        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(delay), value: isVisible)
+    }
+}
+
 #Preview {
-    GameOverView()
+    GameOverScene()
+        .environmentObject(GameViewModel())
 }

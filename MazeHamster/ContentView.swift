@@ -16,8 +16,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             // Main Game View
-                MenuView()
-                .background(Color.black)
+                MainMenuScene()
             
         }
         

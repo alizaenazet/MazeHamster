@@ -280,6 +280,37 @@ class AISystem: GameSystem {
         gameStartTime = Date()
         // print("🤖 Enhanced AI System with pathfinding initialized")
     }
+    private var orientationTestMode = true
+    private var testStartTime: Date?
+
+    private func findCorrectForwardDirection(entity: Entity) {
+        if testStartTime == nil {
+            testStartTime = Date()
+        }
+        
+        let elapsed = Date().timeIntervalSince(testStartTime!)
+        let testInterval: TimeInterval = 3.0 // Change direction every 3 seconds
+        let testIndex = Int(elapsed / testInterval) % 8
+        
+        // Test all possible forward directions for 3D model
+        let testDirections: [(String, simd_quatf)] = [
+            ("Forward +Z", simd_quatf(angle: 0, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -Z", simd_quatf(angle: .pi, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward +X", simd_quatf(angle: .pi/2, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -X", simd_quatf(angle: -.pi/2, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward +Z+45°", simd_quatf(angle: .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -Z+45°", simd_quatf(angle: .pi + .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward +X+45°", simd_quatf(angle: .pi/2 + .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+            ("Forward -X+45°", simd_quatf(angle: -.pi/2 + .pi/4, axis: SIMD3<Float>(0, 1, 0))),
+        ]
+        
+        let (name, rotation) = testDirections[testIndex]
+        entity.transform.rotation = rotation
+        
+        print("🧪 Testing cat forward direction: \(name)")
+        print("    Look at the cat and note which direction it's facing")
+        print("    The NOSE/FACE should point in the direction of movement")
+    }
     
     func update(deltaTime: TimeInterval) {
         let aiEntities = componentManager.getAllEntitiesWithComponent(AIAgentComponent.self)
@@ -524,9 +555,10 @@ class AISystem: GameSystem {
         )
         
         // Update transform component
+        // === IMPORTANT: Update transform component with both position AND rotation ===
         transformComponent.position = realityEntity.position
+        transformComponent.rotation = realityEntity.transform.rotation // NEW: Update rotation too!
     }
-    
     private func moveTowardsWaypointEnhanced(
         entity: Entity,
         from currentPosition: SIMD3<Float>,
@@ -534,24 +566,19 @@ class AISystem: GameSystem {
         speed: Float,
         deltaTime: Float
     ) {
-        // Calculate direction to target
         let direction = targetPosition - currentPosition
         let distance = length(direction)
         
         guard distance > 0.01 else {
-            // print("🎯 Cat too close to waypoint, not moving")
             return
         }
-        
-        // Normalize direction
-        let normalizedDirection = direction / distance
-        
-        // Calculate movement with speed limiting
+
+        let normalizedDirection = normalize(direction)
         let maxMoveDistance = speed * deltaTime
-        let moveDistance = min(maxMoveDistance, distance) // Don't overshoot
+        let moveDistance = min(maxMoveDistance, distance)
         let movement = normalizedDirection * moveDistance
-        
-        // Apply movement
+
+        // Update position
         let newPosition = currentPosition + movement
         entity.position = newPosition
         

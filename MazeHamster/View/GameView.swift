@@ -13,16 +13,20 @@ struct GameView: View {
     @StateObject var gameViewModel  = GameViewModel()
     
     var body: some View {
+        ZStack{
+            
+      
             
         if gameViewModel.isGameFailed {
-            GameOverView()
+            GameOverScene()
                 .environmentObject(gameViewModel)
         }else if gameViewModel.isGameCompleted {
-            GameCompletedView()
+            GameCompletedScene()
                 .environmentObject(gameViewModel)
         }else  {
             
             ZStack{
+                AnimatedBackgroundView()
                 RealityView { content in
                     // Initialize the game scene through ViewModel
                     let scene = gameViewModel.initializeScene()
@@ -43,6 +47,7 @@ struct GameView: View {
                 }
 //                gameOverlay
             }
+        }
         }
     }
 }
