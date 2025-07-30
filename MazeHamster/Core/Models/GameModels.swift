@@ -45,9 +45,9 @@ struct MazeConfiguration {
     let wallThickness: Float
     
     static let `default` = MazeConfiguration(
-        width: 6,      // Smaller default for mobile
-        height: 8,     // Taller than wide for portrait
-        cellSize: 0.8, // Smaller cells for better fit
+        width: 9,
+        height: 18,
+        cellSize: 1.0,
         wallHeight: 1.0,
         wallThickness: 0.1
     )
@@ -254,6 +254,7 @@ struct GameConfiguration {
         if isTablet {
             return .tablet
         } else if screenBounds.x > 400 || screenBounds.y > 700 {
+            print("SISINI")
             return .phonePlus
         } else {
             return .phone

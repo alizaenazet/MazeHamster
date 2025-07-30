@@ -108,7 +108,7 @@ class MazeService: BaseService, MazeServiceProtocol {
         let floorMesh = MeshResource.generateBox(size: floorSize)
         var floorMaterial = visualMaterials.floor
         
-        if let floorTexture = try? TextureResource.load(named: "Ground_Base"){ // TODO: try import directly form the Composer package assets
+        if let floorTexture = try? TextureResource.load(named: "GroundBase"){ // TODO: try import directly form the Composer package assets
             floorMaterial.color.texture = MaterialParameters.Texture(floorTexture)
             // print("success load and apply floor texture")
         }
@@ -176,14 +176,14 @@ class MazeService: BaseService, MazeServiceProtocol {
         //TODO: Temporary dont find solution, why the wall texture is not applied after edited
 //        var wallMaterial = visualMaterials.wall
 //        
-//        if let wallTexture = try? TextureResource.load(named: "Wall_Base"){ // TODO: try import directly form the Composer package assets
+//        if let wallTexture = try? TextureResource.load(named: "WallBase"){ // TODO: try import directly form the Composer package assets
 //            wallMaterial.color.texture = MaterialParameters.Texture(wallTexture)
 //            // print("success load and apply Wall texture")
 //        }
 
 
         var wallMaterial = SimpleMaterial()
-        if let wallTexture = try? TextureResource.load(named: "Wall_Base"){ // TODO: try import directly form the Composer package assets
+        if let wallTexture = try? TextureResource.load(named: "WallBase"){ // TODO: try import directly form the Composer package assets
             wallMaterial.color.texture = MaterialParameters.Texture(wallTexture)
             // print("success load and apply Wall texture")
         }
@@ -275,9 +275,10 @@ class MazeService: BaseService, MazeServiceProtocol {
     }
     
     /// Check if position is near the exit
-    func isNearExit(_ position: SIMD3<Float>, threshold: Float = 0.5) -> Bool {
+    func isNearExit(_ position: SIMD3<Float>, threshold: Float = 1.5) -> Bool {
         let exitPos = getExitPosition()
         let distance = simd_distance(position, exitPos)
+        print("DISTANCE", distance)
         return distance < threshold
     }
 }

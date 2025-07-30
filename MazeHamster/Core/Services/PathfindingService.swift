@@ -520,9 +520,3 @@ extension SIMD2 where Scalar == Int {
     }
 }
 
-extension SIMD2: Hashable where Scalar == Int {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(x)
-        hasher.combine(y)
-    }
-}

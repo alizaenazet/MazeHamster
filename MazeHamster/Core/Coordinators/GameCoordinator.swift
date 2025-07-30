@@ -153,10 +153,10 @@ class GameCoordinator: ObservableObject {
         // Update adaptive info for debugging
         updateAdaptiveInfo()
         
-        // print("📱 Updated adaptive configuration:")
-        // print("   Maze Size: \(adaptiveConfig.maze.width)x\(adaptiveConfig.maze.height)")
-        // print("   Cell Size: \(adaptiveConfig.maze.cellSize)")
-        // print("   Camera Height: \(adaptiveConfig.cameraHeight)")
+         print("📱 Updated adaptive configuration:")
+         print("   Maze Size: \(adaptiveConfig.maze.width)x\(adaptiveConfig.maze.height)")
+         print("   Cell Size: \(adaptiveConfig.maze.cellSize)")
+         print("   Camera Height: \(adaptiveConfig.cameraHeight)")
     }
     
     private func updateAdaptiveInfo() {
@@ -672,12 +672,15 @@ class GameCoordinator: ObservableObject {
         guard let ballEntity = currentScene?.children.first(where: { $0.name == "MazeWorld" })?.children.first(where: { $0.name == "MazeBall" }) else { return }
         
         // Check if near exit
-        let nearExit = mazeService.isNearExit(ballEntity.position, threshold: 1.35)
+        let nearExit = mazeService.isNearExit(ballEntity.position, threshold: 1.5)
         
         // Kunci dihilangkan, jadi player selalu "bisa" keluar jika sudah dekat pintu keluar.
         let canPlayerExitNow = true
         
-        if nearExit && canPlayerExitNow && gameService.gameState == .playing {
+        print("NEER", nearExit)
+        print("GAME STATE", gameService.gameState)
+        
+        if nearExit  && gameService.gameState == .playing {
             gameService.setGameState(.completed)
             // print("🎉 Game completed! Player reached exit.")
         } else if nearExit && !canPlayerExitNow {
