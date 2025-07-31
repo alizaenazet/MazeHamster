@@ -285,6 +285,8 @@ class ScreenAdaptiveService: BaseService {
     func getAdaptiveGameConfiguration() -> GameConfiguration {
         let mazeConfig = getOptimalMazeConfiguration()
         let cameraHeight = getOptimalCameraHeight()
+        let aspectRatio = currentScreenInfo?.aspectRatio ?? 1.0
+        let heightMultiplier = aspectRatio > 1.0 ? 0.6 : 0.5 // Slightly increased from 0.5/0.4
         
         return GameConfiguration(
             maze: mazeConfig,
@@ -292,7 +294,7 @@ class ScreenAdaptiveService: BaseService {
             visualMaterials: .default,
             ballRadius: 0.15,  // Slightly smaller ball
             exitRadius: 0.25,  // Slightly smaller exit
-            cameraHeight: cameraHeight,
+            cameraHeight: Float(heightMultiplier),
             cameraHeightMultiplier: 0.7, // Adjusted: 1.0=normal, 2.0=zoom out, 0.5=zoom in
             catSleepDuration: 2.0
         )
