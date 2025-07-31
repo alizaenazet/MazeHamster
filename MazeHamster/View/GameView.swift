@@ -10,47 +10,74 @@ import RealityKit
 
 
 struct GameView: View {
-    @StateObject var gameViewModel  = GameViewModel()
+    @StateObject private var gameViewModel = GameViewModel() // Create fresh instance
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
+    @State private var hasNavigatedToGameOver = false
+    @State private var hasNavigatedToCompleted = false
+    @State private var hasNavigatedAway = false
     
     var body: some View {
-        ZStack{
-            
-      
-            
-        if gameViewModel.isGameFailed {
-            GameOverScene()
-                .environmentObject(gameViewModel)
-        }else if gameViewModel.isGameCompleted {
-            GameCompletedScene()
-                .environmentObject(gameViewModel)
-        }else  {
-            
-            ZStack{
-                AnimatedBackgroundView()
-                RealityView { content in
-                    // Initialize the game scene through ViewModel
-                    let scene = gameViewModel.initializeScene()
-                    content.add(scene)
-                } update: { content in
-                    // Update the game on each frame
-                    gameViewModel.updateGame(deltaTime: 1.0/60.0)
+        ZStack {
+                    // Main game content
+                    AnimatedBackgroundView()
+                    RealityView { content in
+                        // Initialize the game scene through ViewModel
+                        let scene = gameViewModel.initializeScene()
+                        content.add(scene)
+                    } update: { content in
+                        // Update the game on each frame
+                        gameViewModel.updateGame(deltaTime: 1.0/60.0)
+                    }
+                    .realityViewCameraControls(.none)
+                    .disabled(gameViewModel.isLoading)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+                    .onAppear {
+                        gameViewModel.viewDidAppear()
+                        // Reset navigation flags
+                        hasNavigatedToGameOver = false
+                        hasNavigatedToCompleted = false
+                    }
+                    .onDisappear {
+                        gameViewModel.viewWillDisappear()
+                    }
+                    .environmentObject(gameViewModel)
+                    // gameOverlay (if you want to keep it)
                 }
-                .realityViewCameraControls(.none)
-                .disabled(gameViewModel.isLoading)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-                .onAppear {
-                    gameViewModel.viewDidAppear()
+                .onChange(of: gameViewModel.gameState) { oldValue, newValue in
+                    handleGameStateChange(newValue)
                 }
-                .onDisappear {
-                    gameViewModel.viewWillDisappear()
-                }
-//                gameOverlay
             }
-        }
+    
+    
+    // In GameView.swift, update handleGameStateChange:
+    private func handleGameStateChange(_ state: GameState) {
+        guard !hasNavigatedAway else { return }
+        
+        switch state {
+        case .failed:
+            hasNavigatedAway = true
+            // Pass score to coordinator before navigating
+            navigationCoordinator.gameScore = gameViewModel.score
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                navigationCoordinator.navigateToGameOver()
+            }
+        case .completed:
+            hasNavigatedAway = true
+            // Pass score to coordinator before navigating
+            navigationCoordinator.gameScore = gameViewModel.score
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                navigationCoordinator.navigateToGameCompleted()
+            }
+        default:
+            break
         }
     }
+
 }
+
+
+
 
 extension GameView {
     private var gameOverlay: some View {
@@ -252,7 +279,7 @@ class HapticManager {
 
 
 #Preview {
-    @Previewable @StateObject var gameViewModel = GameViewModel()
     GameView()
-        .environmentObject(gameViewModel)
+        .environmentObject(GameViewModel())
+        .environmentObject(NavigationCoordinator())
 }

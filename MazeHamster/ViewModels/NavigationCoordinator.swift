@@ -1,10 +1,4 @@
-//
-//  NavigationCoordinator.swift
-//  MazeHamster
-//
-//  Created by Ali zaenal on 21/07/25.
-//
-
+// ViewModels/NavigationCoordinator.swift
 import SwiftUI
 
 enum NavigationDestination: Hashable {
@@ -17,9 +11,10 @@ enum NavigationDestination: Hashable {
 @MainActor
 class NavigationCoordinator: ObservableObject {
     @Published var path = NavigationPath()
-    
+    @Published var gameScore: Int = 0 // Store score temporarily
+    // Navigation methods
     func navigateToMenu() {
-        path = NavigationPath() // Reset to root (menu)
+        path = NavigationPath() // Reset to root
     }
     
     func navigateToGame() {
@@ -34,13 +29,30 @@ class NavigationCoordinator: ObservableObject {
         path.append(NavigationDestination.gameCompleted)
     }
     
+    
     func goBack() {
         if !path.isEmpty {
             path.removeLast()
         }
     }
     
-    func resetToRoot() {
+    func goBackToRoot() {
         path = NavigationPath()
+    }
+    
+    func goBackBy(_ count: Int) {
+        let removeCount = min(count, path.count)
+        path.removeLast(removeCount)
+    }
+    
+    func restartGame() {
+        // Remove game over/completed screen and game screen
+        if path.count >= 2 {
+            path.removeLast(2)
+        }
+        // Navigate to fresh game instance
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.navigateToGame()
+        }
     }
 }
