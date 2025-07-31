@@ -17,37 +17,52 @@ struct GameView: View {
     @State private var hasNavigatedAway = false
     
     var body: some View {
-        ZStack {
-                    // Main game content
-                    AnimatedBackgroundView()
-                    RealityView { content in
-                        // Initialize the game scene through ViewModel
-                        let scene = gameViewModel.initializeScene()
-                        content.add(scene)
-                    } update: { content in
-                        // Update the game on each frame
-                        gameViewModel.updateGame(deltaTime: 1.0/60.0)
-                    }
-                    .realityViewCameraControls(.none)
-                    .disabled(gameViewModel.isLoading)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-                    .onAppear {
-                        gameViewModel.viewDidAppear()
-                        // Reset navigation flags
-                        hasNavigatedToGameOver = false
-                        hasNavigatedToCompleted = false
-                    }
-                    .onDisappear {
-                        gameViewModel.viewWillDisappear()
-                    }
-                    .environmentObject(gameViewModel)
-                    // gameOverlay (if you want to keep it)
+        GeometryReader { geometry in
+            ZStack {
+                // Main game content
+                AnimatedBackgroundView()
+                RealityView { content in
+                    // Initialize the game scene through ViewModel
+                    let scene = gameViewModel.initializeScene()
+                    content.add(scene)
+                } update: { content in
+                    // Update the game on each frame
+                    gameViewModel.updateGame(deltaTime: 1.0/60.0)
                 }
-                .onChange(of: gameViewModel.gameState) { oldValue, newValue in
-                    handleGameStateChange(newValue)
+                .realityViewCameraControls(.none)
+                .disabled(gameViewModel.isLoading)
+                .frame(
+                    width: geometry.size.width - 16,  // Slightly reduced horizontal padding
+                    height: geometry.size.height - 8  // Much smaller vertical padding
+                )
+                .clipped()
+                .onAppear {
+                    gameViewModel.viewDidAppear()
+                    // Reset navigation flags
+                    hasNavigatedToGameOver = false
+                    hasNavigatedToCompleted = false
+                    
+                    // Update game configuration with screen dimensions and aspect ratio
+                    let screenSize = SIMD2<Float>(
+                        Float(geometry.size.width),
+                        Float(geometry.size.height)
+                    )
+                    let aspectRatio = Float(geometry.size.width / geometry.size.height)
+                    gameViewModel.updateScreenDimensions(screenSize, aspectRatio: aspectRatio)
                 }
+                .onDisappear {
+                    gameViewModel.viewWillDisappear()
+                }
+                .environmentObject(gameViewModel)
+                // gameOverlay (if you want to keep it)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .edgesIgnoringSafeArea(.all) // Make it truly fullscreen
+        .onChange(of: gameViewModel.gameState) { oldValue, newValue in
+            handleGameStateChange(newValue)
+        }
+    }
     
     
     // In GameView.swift, update handleGameStateChange:

@@ -104,6 +104,12 @@ class GameViewModel: ObservableObject {
     
     // MARK: - Public Methods
     
+    /// Update screen dimensions from GeometryReader
+    func updateScreenDimensions(_ screenSize: SIMD2<Float>, aspectRatio: Float? = nil) {
+        gameCoordinator.getScreenAdaptiveService().updateScreenDimensions(screenSize, aspectRatio: aspectRatio)
+        refreshAdaptiveConfiguration()
+    }
+    
     /// Initialize the game scene with adaptive sizing
     func initializeScene() -> Entity {
         isLoading = true

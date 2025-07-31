@@ -267,9 +267,11 @@ struct GameConfiguration {
         let maxDimension = max(mazeWorldSize.x, mazeWorldSize.y)
         
         // Calculate FOV based on maze size (larger mazes need wider FOV)
-        let baseFOV: Float = 45.0
+        let baseFOV: Float = 50.0 // Increased from 45.0 to show more of the maze
         let scaleFactor = maxDimension / 8.0 // Normalize to 8x8 reference
-        return min(baseFOV * scaleFactor, 75.0) // Cap at 75 degrees
+        
+        // Ensure wider FOV to prevent cropping on sides
+        return min(baseFOV * scaleFactor, 85.0) // Increased cap from 75 to 85 degrees
     }
     
     /// Get UI scaling factor for this configuration
