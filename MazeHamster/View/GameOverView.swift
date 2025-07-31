@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct GameOverScene: View {
-    @EnvironmentObject var gameViewModel: GameViewModel
-    @State private var highScore: Int = 2100
+
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
+    @AppStorage("highScore") private var highScore: Int = 0
     @State private var isNewHighScore: Bool = false
+    @State private var currentScore: Int = 0
     @State private var showContent = false
     @State private var animateTitle = false
     @State private var showScores = false
@@ -18,11 +20,12 @@ struct GameOverScene: View {
     @State private var particleAnimations: [Bool] = Array(repeating: false, count: 15)
     
     private func checkForNewHighScore() {
-        if gameViewModel.score > highScore {
-            isNewHighScore = true
-            highScore = gameViewModel.score
+            currentScore = navigationCoordinator.gameScore
+            if currentScore > highScore {
+                isNewHighScore = true
+                highScore = currentScore
+            }
         }
-    }
     
     private func startAnimationSequence() {
         // Title animation
@@ -48,6 +51,7 @@ struct GameOverScene: View {
         }
     }
 
+    
     var body: some View {
         ZStack {
             // Animated Background
@@ -70,8 +74,7 @@ struct GameOverScene: View {
                 VStack(spacing: 24) {
                     PremiumScoreCard(
                         title: "Final Score",
-                        score: gameViewModel.score,
-                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
+                        score: currentScore, subtitle: "Never give up",
                         accentColor: .cyan,
                         isHighlighted: isNewHighScore
                     )
@@ -110,6 +113,7 @@ struct GameOverScene: View {
                         delay: 0.0
                     ) {
                         HapticManager.impact(.medium)
+                        navigationCoordinator.navigateToMenu()
                         // Navigate to main menu - you'll need to implement this navigation
                         print("Navigate to main menu")
                     }
@@ -122,7 +126,8 @@ struct GameOverScene: View {
                         delay: 0.1
                     ) {
                         HapticManager.impact(.heavy)
-                        gameViewModel.resetGame()
+                        navigationCoordinator.restartGame()
+//                        navigationCoordinator.goBack() // Go back to game
                     }
                     
                     // New Maze Button
@@ -133,7 +138,8 @@ struct GameOverScene: View {
                         delay: 0.2
                     ) {
                         HapticManager.impact(.medium)
-                        gameViewModel.generateNewMaze()
+                        navigationCoordinator.restartGame()
+//                        navigationCoordinator.goBack() // Go back to game
                     }
                 }
                 .padding(.bottom, 60)
@@ -200,4 +206,5 @@ struct AnimatedGameButton: View {
 #Preview {
     GameOverScene()
         .environmentObject(GameViewModel())
+        .environmentObject(NavigationCoordinator())
 }

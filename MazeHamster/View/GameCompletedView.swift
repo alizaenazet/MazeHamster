@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct GameCompletedScene: View {
-    @EnvironmentObject var gameViewModel: GameViewModel
-    @State private var highScore: Int = 2100
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
+    @AppStorage("highScore") private var highScore: Int = 0
+    
+    @State private var currentScore: Int = 0
+    
     @State private var isNewHighScore: Bool = false
     @State private var showContent = false
     @State private var animateTitle = false
@@ -18,11 +21,12 @@ struct GameCompletedScene: View {
     @State private var particleAnimations: [Bool] = Array(repeating: false, count: 15)
     
     private func checkForNewHighScore() {
-        if gameViewModel.score > highScore {
-            isNewHighScore = true
-            highScore = gameViewModel.score
+            currentScore = navigationCoordinator.gameScore
+            if currentScore > highScore {
+                isNewHighScore = true
+                highScore = currentScore
+            }
         }
-    }
     
     private func startAnimationSequence() {
         // Title animation
@@ -70,8 +74,8 @@ struct GameCompletedScene: View {
                 VStack(spacing: 24) {
                     PremiumScoreCard(
                         title: "Final Score",
-                        score: gameViewModel.score,
-                        subtitle: "Maze: \(gameViewModel.currentMazeSize.x)×\(gameViewModel.currentMazeSize.y)",
+                        score:currentScore,
+                        subtitle: "Wuhuu you got it 🥳",
                         accentColor: .green,
                         isHighlighted: isNewHighScore
                     )
@@ -132,6 +136,8 @@ struct GameCompletedScene: View {
                         delay: 0.0
                     ) {
                         HapticManager.impact(.medium)
+                        HapticManager.impact(.medium)
+                        navigationCoordinator.navigateToMenu()
                         // Navigate to main menu - you'll need to implement this navigation
                         print("Navigate to main menu")
                     }
@@ -144,7 +150,7 @@ struct GameCompletedScene: View {
                         delay: 0.1
                     ) {
                         HapticManager.success()
-                        gameViewModel.resetGame()
+                        navigationCoordinator.restartGame() // // Go back to game
                     }
                     
                     // New Maze Button
@@ -155,7 +161,7 @@ struct GameCompletedScene: View {
                         delay: 0.2
                     ) {
                         HapticManager.impact(.medium)
-                        gameViewModel.generateNewMaze()
+                        navigationCoordinator.restartGame() // Go back to game
                     }
                 }
                 .padding(.bottom, 60)
@@ -173,4 +179,5 @@ struct GameCompletedScene: View {
 #Preview {
     GameCompletedScene()
         .environmentObject(GameViewModel())
+        .environmentObject(NavigationCoordinator())
 }

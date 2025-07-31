@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainMenuScene: View {
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
     @State private var showContent = false
     @State private var buttonScale: CGFloat = 1.0
     @State private var isButtonPressed = false
@@ -75,16 +76,28 @@ struct MainMenuScene: View {
                 
                 // Start Button Section
                 VStack(spacing: 20) {
-                    NavigationLink(destination: GameView()
-                        .navigationBarHidden(true)) {
-                        ZStack {
-                            Image("HamsterButton")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 140, height: 140)
-                                .scaleEffect(isButtonPressed ? 0.95 : buttonScale)
-                                .shadow(color: .pink.opacity(0.5), radius: 20, x: 0, y: 10)
+                    Button(action: {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            isButtonPressed = true
                         }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            withAnimation(.easeInOut(duration: 0.05)) {
+                                isButtonPressed = false
+                            }
+                            // Reset game state before navigating
+                            // Navigate to game
+                            navigationCoordinator.navigateToGame()
+                        }
+                    } ){
+                        ZStack {
+                                                    Image("HamsterButton")
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .frame(width: 140, height: 140)
+                                                        .scaleEffect(isButtonPressed ? 0.95 : buttonScale)
+                                                        .shadow(color: .pink.opacity(0.5), radius: 20, x: 0, y: 10)
+                                                }
                     }
                     .buttonStyle(PlainButtonStyle())
                     .simultaneousGesture(TapGesture().onEnded {
@@ -160,4 +173,5 @@ struct InstructionRow: View {
 
 #Preview {
     MainMenuScene()
+        .environmentObject(NavigationCoordinator())
 }

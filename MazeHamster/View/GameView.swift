@@ -10,22 +10,16 @@ import RealityKit
 
 
 struct GameView: View {
-    @StateObject var gameViewModel  = GameViewModel()
+    @StateObject private var gameViewModel = GameViewModel() // Create fresh instance
+    @EnvironmentObject var navigationCoordinator: NavigationCoordinator
+    @State private var hasNavigatedToGameOver = false
+    @State private var hasNavigatedToCompleted = false
+    @State private var hasNavigatedAway = false
     
     var body: some View {
-        ZStack{
-            
-      
-            
-        if gameViewModel.isGameFailed {
-            GameOverScene()
-                .environmentObject(gameViewModel)
-        }else if gameViewModel.isGameCompleted {
-            GameCompletedScene()
-                .environmentObject(gameViewModel)
-        }else  {
-            
-            ZStack{
+        GeometryReader { geometry in
+            ZStack {
+                // Main game content
                 AnimatedBackgroundView()
                 RealityView { content in
                     // Initialize the game scene through ViewModel
@@ -37,20 +31,68 @@ struct GameView: View {
                 }
                 .realityViewCameraControls(.none)
                 .disabled(gameViewModel.isLoading)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(
+                    width: geometry.size.width - 16,  // Slightly reduced horizontal padding
+                    height: geometry.size.height - 8  // Much smaller vertical padding
+                )
                 .clipped()
                 .onAppear {
                     gameViewModel.viewDidAppear()
+                    // Reset navigation flags
+                    hasNavigatedToGameOver = false
+                    hasNavigatedToCompleted = false
+                    
+                    // Update game configuration with screen dimensions and aspect ratio
+                    let screenSize = SIMD2<Float>(
+                        Float(geometry.size.width),
+                        Float(geometry.size.height)
+                    )
+                    let aspectRatio = Float(geometry.size.width / geometry.size.height)
+                    gameViewModel.updateScreenDimensions(screenSize, aspectRatio: aspectRatio)
                 }
                 .onDisappear {
                     gameViewModel.viewWillDisappear()
                 }
-//                gameOverlay
+                .environmentObject(gameViewModel)
+                // gameOverlay (if you want to keep it)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .edgesIgnoringSafeArea(.all) // Make it truly fullscreen
+        .onChange(of: gameViewModel.gameState) { oldValue, newValue in
+            handleGameStateChange(newValue)
         }
     }
+    
+    
+    // In GameView.swift, update handleGameStateChange:
+    private func handleGameStateChange(_ state: GameState) {
+        guard !hasNavigatedAway else { return }
+        
+        switch state {
+        case .failed:
+            hasNavigatedAway = true
+            // Pass score to coordinator before navigating
+            navigationCoordinator.gameScore = gameViewModel.score
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                navigationCoordinator.navigateToGameOver()
+            }
+        case .completed:
+            hasNavigatedAway = true
+            // Pass score to coordinator before navigating
+            navigationCoordinator.gameScore = gameViewModel.score
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                navigationCoordinator.navigateToGameCompleted()
+            }
+        default:
+            break
+        }
+    }
+
 }
+
+
+
 
 extension GameView {
     private var gameOverlay: some View {
@@ -252,7 +294,7 @@ class HapticManager {
 
 
 #Preview {
-    @Previewable @StateObject var gameViewModel = GameViewModel()
     GameView()
-        .environmentObject(gameViewModel)
+        .environmentObject(GameViewModel())
+        .environmentObject(NavigationCoordinator())
 }

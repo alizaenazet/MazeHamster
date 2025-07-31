@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct MazeBallApp: App {
+    @StateObject private var navigationCoordinator = NavigationCoordinator()
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(navigationCoordinator)
         }
     }
 }

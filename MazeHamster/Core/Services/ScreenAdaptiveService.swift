@@ -116,6 +116,30 @@ class ScreenAdaptiveService: BaseService {
     
     // MARK: - Public Methods
     
+    /// Update screen dimensions from GeometryReader
+    func updateScreenDimensions(_ dimensions: SIMD2<Float>, aspectRatio: Float? = nil) {
+        // Only proceed if we already have screen info
+        guard var updatedInfo = currentScreenInfo else {
+            return
+        }
+        
+        // Calculate aspect ratio if not provided
+        let calculatedAspectRatio = aspectRatio ?? (dimensions.x / dimensions.y)
+        
+        // Update the size with GeometryReader values
+        updatedInfo = ScreenInfo(
+            size: CGSize(width: CGFloat(dimensions.x), height: CGFloat(dimensions.y)),
+            scale: updatedInfo.scale,
+            deviceType: updatedInfo.deviceType,
+            orientation: updatedInfo.orientation,
+            safeAreaInsets: updatedInfo.safeAreaInsets,
+            aspectRatio: calculatedAspectRatio
+        )
+        
+        currentScreenInfo = updatedInfo
+        // print("📏 Screen dimensions updated from GeometryReader: \(dimensions.x) × \(dimensions.y), AR: \(calculatedAspectRatio)")
+    }
+    
     /// Get current screen information
     func getScreenInfo() -> ScreenInfo? {
         return currentScreenInfo
@@ -147,10 +171,16 @@ class ScreenAdaptiveService: BaseService {
     /// Get optimal camera height for current screen
     func getOptimalCameraHeight() -> Float {
         guard let screenInfo = currentScreenInfo else {
-            return 8.0
+            return 12.0 // Default to higher camera height to avoid cropping
         }
         
-        return screenInfo.deviceType.cameraHeight
+        // Increase camera height slightly to avoid cropping
+        let baseHeight = screenInfo.deviceType.cameraHeight
+        
+        // Adjust based on aspect ratio to prevent side cropping
+        let aspectRatioAdjustment = screenInfo.aspectRatio < 1.0 ? 1.3 : 1.0
+        
+        return baseHeight * Float(aspectRatioAdjustment)
     }
     
     /// Get UI scaling factor for current screen
@@ -255,6 +285,8 @@ class ScreenAdaptiveService: BaseService {
     func getAdaptiveGameConfiguration() -> GameConfiguration {
         let mazeConfig = getOptimalMazeConfiguration()
         let cameraHeight = getOptimalCameraHeight()
+        let aspectRatio = currentScreenInfo?.aspectRatio ?? 1.0
+        let heightMultiplier = aspectRatio > 1.0 ? 0.6 : 0.5 // Slightly increased from 0.5/0.4
         
         return GameConfiguration(
             maze: mazeConfig,
@@ -262,8 +294,8 @@ class ScreenAdaptiveService: BaseService {
             visualMaterials: .default,
             ballRadius: 0.15,  // Slightly smaller ball
             exitRadius: 0.25,  // Slightly smaller exit
-            cameraHeight: cameraHeight,
-            cameraHeightMultiplier: 0.5, // ADJUST THIS VALUE: 1.0=normal, 2.0=zoom out, 0.5=zoom in
+            cameraHeight: Float(heightMultiplier),
+            cameraHeightMultiplier: 0.7, // Adjusted: 1.0=normal, 2.0=zoom out, 0.5=zoom in
             catSleepDuration: 2.0
         )
     }

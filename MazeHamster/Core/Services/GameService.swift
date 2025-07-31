@@ -110,7 +110,7 @@ class GameService: BaseService, GameServiceProtocol {
         let elapsedTime = currentTime.timeIntervalSince(startTime)
         
         // Score based on time (faster completion = higher score)
-        let baseScore = 1000
+        let baseScore = 0
         let timeBonus = max(0, 600 - Int(elapsedTime)) // Bonus for completing under 10 minutes
         score = baseScore + timeBonus
     }
